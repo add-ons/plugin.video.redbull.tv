@@ -12,6 +12,6 @@
 		<description lang="en">Watch Redbull TV content</description>
 		<platform>all</platform>
 		<website>http://www.twitter.com/nedge2k</website>
-		<source>TBD</source>
+		<source>https://github.com/nedge2k/kodi.plugin.video.redbulltv2</source>
 	</extension>
 </addon>
