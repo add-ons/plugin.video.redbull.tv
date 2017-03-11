@@ -18,19 +18,17 @@ def addDir(function,category,api_url):
 	url = build_url({'function': function, 'category': category.encode('utf-8'), 'api_url' : api_url.encode('base64')})
 	li = xbmcgui.ListItem(category, iconImage='DefaultFolder.png')
 	xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=True)
-	xbmcplugin.setContent(addon_handle, "movies")
 	
 def addStream(content):
 	li = xbmcgui.ListItem(content[0], iconImage="DefaultVideo.png", thumbnailImage=content[3])
 	li.setInfo( type="Video", infoLabels={ "Title": content[0], "Plot": content[1]} )
 	xbmcplugin.addDirectoryItem(handle=addon_handle, url=content[2], listitem=li, isFolder=False)
-	xbmcplugin.setContent(addon_handle, "movies")
 	
 def build_url(query):
 	return base_url + '?' + urllib.urlencode(query)
 	
 def strip_url(url):
-	nurl = re.match("loadPage\(\'(.*)\'\)\;",url)
+	nurl = re.search("\(\'(.*)\'\)",url)
 	return nurl.group(1)
 	
 def getContent(data):
@@ -44,8 +42,9 @@ def getListings(url,function,category):
 	xml = ET.parse(urllib2.urlopen(url.decode('base64')))
 	data = { "showcasePoster" : xml.findall('.//showcasePoster'),
 			"sixteenByNinePoster" : xml.findall('.//sixteenByNinePoster'),
-			"moviePoster" : xml.findall('.//moviePoster'),
+			"schedule" : xml.findall(".//actionButton[@id='schedule-button']"),
 			"twoLineMenuItem" : xml.findall('.//twoLineMenuItem'),
+			"twoLineEnhancedMenuItem" : xml.findall('.//twoLineEnhancedMenuItem'),
 			"collectionDivider" : xml.findall('.//collectionDivider'),
 			"shelf" : xml.findall('.//shelf'),
 			"httpLiveStreamingVideoAsset" : xml.findall('.//httpLiveStreamingVideoAsset')}
@@ -63,8 +62,12 @@ def getListings(url,function,category):
 				addStream(content)
 			else:
 				#xbmcgui.Dialog().ok("Info","No stream available (yet)")
+				for schedule in data["schedule"]:
+					addDir("listing",schedule.get("accessibilityLabel"),strip_url(schedule.get("onPlay")))
 				for related in data["sixteenByNinePoster"]:
 					addDir("content",related.get("accessibilityLabel"),strip_url(related.get("onPlay")))
+				for listing in data["twoLineEnhancedMenuItem"]:
+					addDir("content",listing.find("label").text,strip_url(listing.get("onPlay")))
 			
 	if function == "collection":
 		i = 0;
@@ -83,6 +86,10 @@ def getListings(url,function,category):
 		elif len(data["twoLineMenuItem"]) > 0:
 			for tv in data["twoLineMenuItem"]:
 				addDir("content",tv.find("label").text,strip_url(tv.get("onPlay")))
+		elif len(data["twoLineEnhancedMenuItem"]) > 0:
+			for schedule in data["twoLineEnhancedMenuItem"]:
+				if "onPlay" in schedule.attrib:
+					addDir("content",schedule.find("label").text,strip_url(schedule.get("onPlay")))
 				
 	xbmcplugin.endOfDirectory(addon_handle)
 	#xbmcgui.Dialog().ok('hello',repr(len(data["collectionDivider"])))			
