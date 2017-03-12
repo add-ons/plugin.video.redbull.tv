@@ -38,11 +38,24 @@ def getContent(data):
 	image = data[0].find("image").get("src1080")
 	return name, description, url, image
 	
+def getXML(url):
+	try:
+		response = urllib2.urlopen(url.decode('base64'))
+	except urllib2.URLError as e:
+		xbmcgui.Dialog().ok("Error","Error getting data from Redbull server: " + e.reason[1],"Try again shortly")
+		raise IOError("Error getting data from Redbull server: " + e.reason[1])
+	else:
+		return ET.parse(response)
+	
 def getListings(url,function,category):
-	xml = ET.parse(urllib2.urlopen(url.decode('base64')))
+	try:
+		xml = getXML(url)
+	except IOError as e:
+		return
+		
 	data = { "showcasePoster" : xml.findall('.//showcasePoster'),
 			"sixteenByNinePoster" : xml.findall('.//sixteenByNinePoster'),
-			"schedule" : xml.findall(".//actionButton[@id='schedule-button']"),
+			"actionButton" : xml.findall(".//actionButton"),
 			"twoLineMenuItem" : xml.findall('.//twoLineMenuItem'),
 			"twoLineEnhancedMenuItem" : xml.findall('.//twoLineEnhancedMenuItem'),
 			"collectionDivider" : xml.findall('.//collectionDivider'),
@@ -62,8 +75,9 @@ def getListings(url,function,category):
 				addStream(content)
 			else:
 				#xbmcgui.Dialog().ok("Info","No stream available (yet)")
-				for schedule in data["schedule"]:
-					addDir("listing",schedule.get("accessibilityLabel"),strip_url(schedule.get("onPlay")))
+				for actionButton in data["actionButton"]:
+					if actionButton.attrib["id"] == "schedule-button":
+						addDir("listing",actionButton.get("accessibilityLabel"),strip_url(actionButton.get("onPlay")))
 				for related in data["sixteenByNinePoster"]:
 					addDir("content",related.get("accessibilityLabel"),strip_url(related.get("onPlay")))
 				for listing in data["twoLineEnhancedMenuItem"]:
@@ -73,7 +87,7 @@ def getListings(url,function,category):
 		i = 0;
 		for collection in data['collectionDivider']:
 			if collection.get("accessibilityLabel") == category:
-				for poster in data["shelf"][i].findall('.//items/*[@onPlay]'):
+				for poster in data["shelf"][i].find('.//items').getchildren():
 					addDir("content",poster.get("accessibilityLabel"),strip_url(poster.get("onPlay")))
 			i = i+1
 			
