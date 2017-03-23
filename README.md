@@ -15,3 +15,7 @@ Changelog:
 	0.0.3
 		Fixed compatibility issue with Kodi forks (like SPMC) using python 2.6
 		Added error handling for when the server url errors out
+		
+	0.0.4
+		Code cleanup/refactoring
+		Added thumbnailimage and summary to directories
