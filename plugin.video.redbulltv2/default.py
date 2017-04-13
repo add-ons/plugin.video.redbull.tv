@@ -99,7 +99,6 @@ class RedbullTV2():
 	def getListings(self):
 		function = self.args.get('function')[0]
 		url = [self.args.get("api_url")[0],""]
-		query = ""
 		
 		if function == "search":
 			url[1] = self.getKeyboard()
