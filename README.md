@@ -19,3 +19,6 @@ Changelog:
 	0.0.4
 		Code cleanup/refactoring
 		Added thumbnailimage and summary to directories
+		
+	0.0.5
+		Added search function
