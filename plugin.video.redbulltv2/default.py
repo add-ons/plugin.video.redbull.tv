@@ -1,4 +1,4 @@
-import sys, urllib, urllib2, urlparse, xbmcgui, xbmcplugin, xbmcaddon, re
+import sys, urllib, urllib2, urlparse, xbmcgui, xbmcplugin, xbmcaddon, re, xbmc
 import xml.etree.ElementTree as ET
 
 class RedbullTV2():
@@ -20,6 +20,7 @@ class RedbullTV2():
 			self.addDir("listing","TV",self.redbull_api + "views/tv",self.icon)
 			self.addDir("listing","Channels",self.redbull_api + "views/channels",self.icon)
 			self.addDir("listing","Calendar",self.redbull_api + "views/calendar",self.icon)
+			self.addDir("search","Search",self.redbull_api + "search?q=",self.icon)
 			xbmcplugin.endOfDirectory(self.addon_handle)
 		
 	def addDir(self,function,category,api_url,image,subtitle='', summary=''):
@@ -41,6 +42,14 @@ class RedbullTV2():
 		nurl = re.search("\(\'(.*)\'\)",url)
 		return nurl.group(1)
 	
+	@staticmethod
+	def getKeyboard( default="", heading="", hidden=False ):
+		keyboard = xbmc.Keyboard( default, heading, hidden )
+		keyboard.doModal()
+		if ( keyboard.isConfirmed() ):
+			return str(urllib.quote_plus(keyboard.getText()))
+		return default
+	
 	@staticmethod	
 	def getContent(data):
 		name = data[0].find("title").text
@@ -52,7 +61,7 @@ class RedbullTV2():
 	@staticmethod	
 	def getXML(url):
 		try:
-			response = urllib2.urlopen(url.decode('base64'))
+			response = urllib2.urlopen(url[0].decode('base64')+url[1])
 		except urllib2.URLError as e:
 			xbmcgui.Dialog().ok("Error","Error getting data from Redbull server: " + e.reason[1],"Try again shortly")
 			raise IOError("Error getting data from Redbull server: " + e.reason[1])
@@ -65,12 +74,12 @@ class RedbullTV2():
 			if "onPlay" in element.attrib:
 				lurl = self.strip_url(element.get("onPlay"))
 			subtitle = ''
-			if element.find('.//subtitle') is not None:
+			if element.find('.//subtitle') is not None and element.find('.//subtitle').text is not None:
 				subtitle = ' - ' + element.find('.//subtitle').text
-			elif element.find('.//label2') is not None:
+			elif element.find('.//label2') is not None and element.find('.//label2').text is not None:
 				subtitle = ' - ' + element.find('.//label2').text
 			summary = ''	
-			if element.find('.//summary') is not None:
+			if element.find('.//summary') is not None and element.find('.//summary').text is not None :
 				summary = element.find('.//summary').text
 			self.addDir(function,self.getLabel(element),lurl,self.getImage(element),subtitle,summary)
 	
@@ -88,7 +97,14 @@ class RedbullTV2():
 			return element.find('.//label').text
 
 	def getListings(self):
-		url = self.args.get("api_url")[0]
+		function = self.args.get('function')[0]
+		url = [self.args.get("api_url")[0],""]
+		query = ""
+		
+		if function == "search":
+			url[1] = self.getKeyboard()
+			function = "listing"
+		
 		try:
 			xml = self.getXML(url)
 		except IOError as e:
@@ -103,7 +119,7 @@ class RedbullTV2():
 				"shelf" : xml.findall('.//shelf'),
 				"httpLiveStreamingVideoAsset" : xml.findall('.//httpLiveStreamingVideoAsset')}
 				
-		function = self.args.get('function')[0]
+		
 
 		if function == "showcase":
 			self.buildList(data['showcasePoster'],"content")
@@ -131,12 +147,12 @@ class RedbullTV2():
 		if function == "listing":
 			if len(data["collectionDivider"]) > 0:
 				if len(data["showcasePoster"]) > 0:
-					self.addDir("showcase","Showcase",url.decode('base64'),self.icon)
-				self.buildList(data['collectionDivider'],"collection",url.decode('base64'))
+					self.addDir("showcase","Showcase",url[0].decode('base64'),self.icon)
+				self.buildList(data['collectionDivider'],"collection",url[0].decode('base64'))
 			elif len(data["twoLineMenuItem"]) > 0:
 				self.buildList(data['twoLineMenuItem'],"content")
 			elif len(data["twoLineEnhancedMenuItem"]) > 0:
-				self.buildList(data['twoLineEnhancedMenuItem'],"content",url.decode('base64'))
+				self.buildList(data['twoLineEnhancedMenuItem'],"content",url[0].decode('base64'))
 					
 		xbmcplugin.endOfDirectory(self.addon_handle)
 		#xbmcgui.Dialog().ok('hello',repr(len(data["collectionDivider"])))			
