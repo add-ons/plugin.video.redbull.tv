@@ -3,6 +3,15 @@ import xml.etree.ElementTree as ET
 
 class RedbullTV2():
 	def __init__(self):
+		self.resolutions = {
+			"0" : "180",
+			"1" : "240",
+			"2" : "360",
+			"3" : "540",
+			"4" : "720",
+			"5" : "1080",
+		}
+
 		self.id = 'plugin.video.redbulltv2'
 		self.addon = xbmcaddon.Addon(self.id)
 		self.icon = self.addon.getAddonInfo('icon')
@@ -22,26 +31,26 @@ class RedbullTV2():
 			self.addDir("listing","Calendar",self.redbull_api + "views/calendar",self.icon)
 			self.addDir("search","Search",self.redbull_api + "search?q=",self.icon)
 			xbmcplugin.endOfDirectory(self.addon_handle)
-		
+
 	def addDir(self,function,category,api_url,image,subtitle='', summary=''):
 		url = self.build_url({'function': function, 'category': category.encode('utf-8'), 'api_url' : api_url.encode('base64')})
 		li = xbmcgui.ListItem(category + subtitle, iconImage='DefaultFolder.png', thumbnailImage=image)
 		li.setInfo( type="Video", infoLabels={ "Title": category + subtitle, "Plot": summary} )
 		xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=url, listitem=li, isFolder=True)
-		
+
 	def addStream(self,content):
 		li = xbmcgui.ListItem(content[0], iconImage="DefaultVideo.png", thumbnailImage=content[3])
 		li.setInfo( type="Video", infoLabels={ "Title": content[0], "Plot": content[1]} )
 		xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=content[2], listitem=li, isFolder=False)
-		
+
 	def build_url(self,query):
 		return self.base_url + '?' + urllib.urlencode(query)
-	
-	@staticmethod	
+
+	@staticmethod
 	def strip_url(url):
 		nurl = re.search("\(\'(.*)\'\)",url)
 		return nurl.group(1)
-	
+
 	@staticmethod
 	def getKeyboard( default="", heading="", hidden=False ):
 		keyboard = xbmc.Keyboard( default, heading, hidden )
@@ -49,16 +58,15 @@ class RedbullTV2():
 		if ( keyboard.isConfirmed() ):
 			return str(urllib.quote_plus(keyboard.getText()))
 		return default
-	
-	@staticmethod	
-	def getContent(data):
+
+	def getContent(self,data):
 		name = data[0].find("title").text
 		description = data[0].find("description").text
-		url = data[0].find("mediaURL").text
+		url = self.getMediaUrlByResolution(data[0].find("mediaURL").text)
 		image = data[0].find("image").get("src1080")
 		return name, description, url, image
-	
-	@staticmethod	
+
+	@staticmethod
 	def getXML(url):
 		try:
 			response = urllib2.urlopen(url[0].decode('base64')+url[1])
@@ -67,7 +75,17 @@ class RedbullTV2():
 			raise IOError("Error getting data from Redbull server: " + e.reason[1])
 		else:
 			return ET.parse(response)
-			
+
+	def getMediaUrlByResolution(self, url):
+		try:
+			response = urllib2.urlopen(url).read()
+			media_url = re.search("x" + self.resolutions[self.addon.getSetting('video.resolution')] + ",.*\n(.*)",response).group(1)
+		except urllib2.URLError as e:
+			xbmcgui.Dialog().ok("Error","Couldn't find requested quality stream: " + e.reason[1],"reverting to default quality")
+			return url
+		else:
+			return media_url
+
 	def buildList(self,array,function,url=''):
 		for element in array:
 			lurl = url
@@ -78,17 +96,17 @@ class RedbullTV2():
 				subtitle = ' - ' + element.find('.//subtitle').text
 			elif element.find('.//label2') is not None and element.find('.//label2').text is not None:
 				subtitle = ' - ' + element.find('.//label2').text
-			summary = ''	
+			summary = ''
 			if element.find('.//summary') is not None and element.find('.//summary').text is not None :
 				summary = element.find('.//summary').text
 			self.addDir(function,self.getLabel(element),lurl,self.getImage(element),subtitle,summary)
-	
+
 	def getImage(self,element):
 		if element.find('.//image') is not None:
 			return element.find('.//image').get('src1080')
 		else:
 			return self.icon
-	
+
 	@staticmethod
 	def getLabel(element):
 		if "accessibilityLabel" in element.attrib:
@@ -99,16 +117,16 @@ class RedbullTV2():
 	def getListings(self):
 		function = self.args.get('function')[0]
 		url = [self.args.get("api_url")[0],""]
-		
+
 		if function == "search":
 			url[1] = self.getKeyboard()
 			function = "listing"
-		
+
 		try:
 			xml = self.getXML(url)
 		except IOError as e:
 			return
-			
+
 		data = { "showcasePoster" : xml.findall('.//showcasePoster'),
 				"sixteenByNinePoster" : xml.findall('.//sixteenByNinePoster'),
 				"actionButton" : xml.findall(".//actionButton"),
@@ -117,12 +135,10 @@ class RedbullTV2():
 				"collectionDivider" : xml.findall('.//collectionDivider'),
 				"shelf" : xml.findall('.//shelf'),
 				"httpLiveStreamingVideoAsset" : xml.findall('.//httpLiveStreamingVideoAsset')}
-				
-		
 
 		if function == "showcase":
 			self.buildList(data['showcasePoster'],"content")
-		
+
 		if function == "content":
 			if len(data["collectionDivider"]) > 0:
 				function = "listing"
@@ -135,14 +151,14 @@ class RedbullTV2():
 							self.addDir("listing",actionButton.get("accessibilityLabel"),self.strip_url(actionButton.get("onPlay")),self.icon)
 					self.buildList(data['sixteenByNinePoster'],"content")
 					self.buildList(data['twoLineEnhancedMenuItem'],"content")
-				
+
 		if function == "collection":
 			i = 0;
 			for collection in data['collectionDivider']:
 				if collection.get("accessibilityLabel") == self.args.get('category')[0]:
 					self.buildList(data["shelf"][i].find('.//items').getchildren(),"content")
 				i = i+1
-				
+
 		if function == "listing":
 			if len(data["collectionDivider"]) > 0:
 				if len(data["showcasePoster"]) > 0:
@@ -152,8 +168,8 @@ class RedbullTV2():
 				self.buildList(data['twoLineMenuItem'],"content")
 			elif len(data["twoLineEnhancedMenuItem"]) > 0:
 				self.buildList(data['twoLineEnhancedMenuItem'],"content",url[0].decode('base64'))
-					
+
 		xbmcplugin.endOfDirectory(self.addon_handle)
-		#xbmcgui.Dialog().ok('hello',repr(len(data["collectionDivider"])))			
-	
+		#xbmcgui.Dialog().ok('hello',repr(len(data["collectionDivider"])))
+
 RedbullTV2().navigation()
