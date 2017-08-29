@@ -3,15 +3,6 @@ import xml.etree.ElementTree as ET
 
 class RedbullTV2():
 	def __init__(self):
-		self.resolutions = {
-			"0" : "180",
-			"1" : "240",
-			"2" : "360",
-			"3" : "540",
-			"4" : "720",
-			"5" : "1080",
-		}
-
 		self.id = 'plugin.video.redbulltv2'
 		self.addon = xbmcaddon.Addon(self.id)
 		self.icon = self.addon.getAddonInfo('icon')
@@ -20,6 +11,16 @@ class RedbullTV2():
 		self.args = urlparse.parse_qs(sys.argv[2][1:])
 		self.redbull_api = " https://appletv-v2.redbull.tv/"
 		xbmcplugin.setContent(self.addon_handle, 'movies')
+
+	@staticmethod
+	def getResolutionCode(id):
+		return {
+			"0" : "320x180",
+			"1" : "426x240",
+			"2" : "640x360",
+			"3" : "960x540",
+			"4" : "1280x720",
+		}.get(id, "1920x1080")
 
 	def navigation(self):
 		if self.args.get('function', None):
@@ -62,8 +63,22 @@ class RedbullTV2():
 	def getContent(self,data):
 		name = data[0].find("title").text
 		description = data[0].find("description").text
-		url = self.getMediaUrlByResolution(data[0].find("mediaURL").text)
-		image = data[0].find("image").get("src1080")
+		image = data[0].find("image").get("src720")
+		url = data[0].find("mediaURL").text
+
+		# Try find the specific stream based on the users preferences
+		try:
+			playlists = urllib2.urlopen(url).read()
+			# media_url = re.search("x" + self.resolutions[self.addon.getSetting('video.resolution')] + ",.*\n(.*)",response).group(1)
+			resolutionCode = self.getResolutionCode(self.addon.getSetting('video.resolution'))
+			media_url = re.search(
+				"RESOLUTION=" + resolutionCode + ",.*\n(.*)",
+				playlists).group(1)
+		except urllib2.URLError as e:
+			xbmcgui.Dialog().ok("Error","Couldn't find " + resolutionCode + " stream: " + e.reason[1],"Reverting to default quality")
+		else:
+			url = media_url
+
 		return name, description, url, image
 
 	@staticmethod
@@ -75,16 +90,6 @@ class RedbullTV2():
 			raise IOError("Error getting data from Redbull server: " + e.reason[1])
 		else:
 			return ET.parse(response)
-
-	def getMediaUrlByResolution(self, url):
-		try:
-			response = urllib2.urlopen(url).read()
-			media_url = re.search("x" + self.resolutions[self.addon.getSetting('video.resolution')] + ",.*\n(.*)",response).group(1)
-		except urllib2.URLError as e:
-			xbmcgui.Dialog().ok("Error","Couldn't find requested quality stream: " + e.reason[1],"reverting to default quality")
-			return url
-		else:
-			return media_url
 
 	def buildList(self,array,function,url=''):
 		for element in array:
