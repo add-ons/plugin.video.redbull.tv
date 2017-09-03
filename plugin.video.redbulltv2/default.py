@@ -9,7 +9,7 @@ class RedbullTV2():
 		self.base_url = sys.argv[0]
 		self.addon_handle = int(sys.argv[1])
 		self.args = urlparse.parse_qs(sys.argv[2][1:])
-		self.redbull_api = " https://appletv-v2.redbull.tv/"
+		self.redbull_api = "https://appletv-v2.redbull.tv/"
 		xbmcplugin.setContent(self.addon_handle, 'movies')
 
 	@staticmethod
@@ -33,16 +33,20 @@ class RedbullTV2():
 			self.addDir("search","Search",self.redbull_api + "search?q=",self.icon)
 			xbmcplugin.endOfDirectory(self.addon_handle)
 
-	def addDir(self,function,category,api_url,image,subtitle='', summary=''):
+	def addDir(self,function,category,api_url,image,subtitle='', summary='', isFolder=True):
 		url = self.build_url({'function': function, 'category': category.encode('utf-8'), 'api_url' : api_url.encode('base64')})
 		li = xbmcgui.ListItem(category + subtitle, iconImage='DefaultFolder.png', thumbnailImage=image)
-		li.setInfo( type="Video", infoLabels={ "Title": category + subtitle, "Plot": summary} )
-		xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=url, listitem=li, isFolder=True)
+		li.setInfo( type="Video", infoLabels={ "Title": category + subtitle, "Plot": summary } )
+		if (isFolder == False):
+			li.setProperty('IsPlayable', 'true')
+		xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=url, listitem=li, isFolder=isFolder)
 
-	def addStream(self,content):
-		li = xbmcgui.ListItem(content[0], iconImage="DefaultVideo.png", thumbnailImage=content[3])
-		li.setInfo( type="Video", infoLabels={ "Title": content[0], "Plot": content[1]} )
-		xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=content[2], listitem=li, isFolder=False)
+	def playStream(self,content):
+		li = xbmcgui.ListItem(label=content[0], path=content[2])
+		li.setInfo( type="Video", infoLabels={ "title": content[0], "plot": content[1]} )
+		li.setArt({'poster': content[3], 'iconImage': "DefaultVideo.png", 'thumbnailImage': content[3]})
+		li.setProperty("IsPlayable", "true")
+		xbmcplugin.setResolvedUrl(handle=self.addon_handle, succeeded=True, listitem=li)
 
 	def build_url(self,query):
 		return self.base_url + '?' + urllib.urlencode(query)
@@ -104,7 +108,12 @@ class RedbullTV2():
 			summary = ''
 			if element.find('.//summary') is not None and element.find('.//summary').text is not None :
 				summary = element.find('.//summary').text
-			self.addDir(function,self.getLabel(element),lurl,self.getImage(element),subtitle,summary)
+
+			# if it's a content url, don't add it as a folder
+			if re.search(self.redbull_api + "(content|linear_stream)",lurl):
+				self.addDir(function,self.getLabel(element),lurl,self.getImage(element),subtitle,summary,False)
+			else:
+				self.addDir(function,self.getLabel(element),lurl,self.getImage(element),subtitle,summary)
 
 	def getImage(self,element):
 		if element.find('.//image') is not None:
@@ -149,7 +158,7 @@ class RedbullTV2():
 				function = "listing"
 			else:
 				if len(data["httpLiveStreamingVideoAsset"]) > 0:
-					self.addStream(self.getContent(data["httpLiveStreamingVideoAsset"]))
+					self.playStream(self.getContent(data["httpLiveStreamingVideoAsset"]))
 				else:
 					for actionButton in data["actionButton"]:
 						if actionButton.attrib["id"] == "schedule-button":
