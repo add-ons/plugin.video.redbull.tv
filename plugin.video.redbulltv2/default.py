@@ -63,7 +63,7 @@ class RedbullTV2():
 	def getContent(self,data):
 		name = data[0].find("title").text
 		description = data[0].find("description").text
-		image = data[0].find("image").get("src720")
+		image = data[0].find("image").get("src1080")
 		url = data[0].find("mediaURL").text
 
 		# Try find the specific stream based on the users preferences
