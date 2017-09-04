@@ -72,10 +72,10 @@ class RedbullTV2():
 			# media_url = re.search("x" + self.resolutions[self.addon.getSetting('video.resolution')] + ",.*\n(.*)",response).group(1)
 			resolutionCode = self.getResolutionCode(self.addon.getSetting('video.resolution'))
 			media_url = re.search(
-				"RESOLUTION=" + resolutionCode + ",.*\n(.*)",
+				"RESOLUTION=" + resolutionCode + ".*\n(.*)",
 				playlists).group(1)
-		except urllib2.URLError as e:
-			xbmcgui.Dialog().ok("Error","Couldn't find " + resolutionCode + " stream: " + e.reason[1],"Reverting to default quality")
+		except Exception as e:
+			xbmcgui.Dialog().ok("Error","Couldn't find " + resolutionCode + " stream","Reverting to default quality")
 		else:
 			url = media_url
 
