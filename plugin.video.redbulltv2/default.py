@@ -73,7 +73,6 @@ class RedbullTV2():
 		# Try find the specific stream based on the users preferences
 		try:
 			playlists = urllib2.urlopen(url).read()
-			# media_url = re.search("x" + self.resolutions[self.addon.getSetting('video.resolution')] + ",.*\n(.*)",response).group(1)
 			resolutionCode = self.getResolutionCode(self.addon.getSetting('video.resolution'))
 			media_url = re.search(
 				"RESOLUTION=" + resolutionCode + ".*\n(.*)",
