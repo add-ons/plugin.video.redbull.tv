@@ -1,5 +1,5 @@
-import sys, urlparse, os
-import xbmcgui, xbmcplugin, xbmcaddon
+import sys, urlparse, os, urllib
+import xbmcgui, xbmcplugin, xbmcaddon, xbmc
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'resources'))
 import lib.utils as utils
@@ -16,12 +16,30 @@ class RedbullTV2(object):
         xbmcplugin.setContent(self.addon_handle, 'movies')
         self.redbulltv_client = redbulltv.RedbullTVClient()
 
+    @staticmethod
+    def get_keyboard(default="", heading="", hidden=False):
+        keyboard = xbmc.Keyboard(default, heading, hidden)
+        keyboard.doModal()
+        if keyboard.isConfirmed():
+            return str(urllib.quote_plus(keyboard.getText()))
+        return default
+
     def navigation(self):
         url = self.args.get("api_url")[0].decode('base64') if self.args.get("api_url") else None
         category = self.args.get('category', [None])[0]
 
-        items = self.redbulltv_client.get_items(url, category, self.addon.getSetting('video.resolution'))
+        if url and "search?q=" in url:
+            url += self.get_keyboard()
 
+        try:
+            items = self.redbulltv_client.get_items(url, category, self.addon.getSetting('video.resolution'))
+        except IOError as err:
+            xbmcgui.Dialog().ok("Error", "Error getting data from Redbull server.", "Try again shortly")
+            return
+
+        if not items:
+            xbmcgui.Dialog().ok("No Results", "No results found", "Please try another menu or search")
+            return
         if items[0].get("is_stream"):
             self.play_stream(items[0])
         else:

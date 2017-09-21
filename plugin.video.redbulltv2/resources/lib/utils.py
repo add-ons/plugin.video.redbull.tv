@@ -10,11 +10,8 @@ def build_url(base_url, query):
 
 def get_xml(url):
     try:
-        # response = urllib2.urlopen(url[0].decode('base64')+url[1])
         response = urllib2.urlopen(url)
-    except urllib2.URLError:
-        # xbmcgui.Dialog().ok("Error", "Error getting data from Redbull server: " + err.reason[1], "Try again shortly")
-        raise
-        # raise IOError("Error getting data from Redbull server: " + err.reason[1])
+    except urllib2.URLError as err:
+        raise IOError(*err.reason)
     else:
         return ET.parse(response)

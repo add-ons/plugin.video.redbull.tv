@@ -16,7 +16,8 @@ class ITTestRedbulltvClient(unittest.TestCase):
                     {'url': 'https://appletv-v2.redbull.tv/views/discover', 'is_content': False, 'title': 'Discover'},
                     {'url': 'https://appletv-v2.redbull.tv/views/tv', 'is_content': False, 'title': 'TV'},
                     {'url': 'https://appletv-v2.redbull.tv/views/channels', 'is_content': False, 'title': 'Channels'},
-                    {'url': 'https://appletv-v2.redbull.tv/views/calendar', 'is_content': False, 'title': 'Calendar'}
+                    {'url': 'https://appletv-v2.redbull.tv/views/calendar', 'is_content': False, 'title': 'Calendar'},
+                    {'url': 'https://appletv-v2.redbull.tv/search?q=', 'is_content': False, 'title': 'Search'}
                 ]
             ),
         ]
