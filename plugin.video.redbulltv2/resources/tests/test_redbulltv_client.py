@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, os, pprint
+import sys, os
 import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import lib.redbulltv_client as redbulltv
