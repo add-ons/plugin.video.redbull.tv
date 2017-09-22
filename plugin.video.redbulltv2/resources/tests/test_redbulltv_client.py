@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-import sys, os
+import sys, os, time
 import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import lib.redbulltv_client as redbulltv
 
-# python -B -m unittest discover
 class ITTestRedbulltvClient(unittest.TestCase):
-    redbulltv_client = redbulltv.RedbullTVClient()
+    redbulltv_client = redbulltv.RedbullTVClient('4')
 
     def test_get_root_menu(self):
         test_data = [
@@ -55,7 +54,7 @@ class ITTestRedbulltvClient(unittest.TestCase):
         Test the Watch Now Live Stream and confirm a resolution specific playlist is returned
         """
         test_data = (
-            ('https://appletv-v2.redbull.tv/linear_stream', None, '4'),
+            ('https://appletv-v2.redbull.tv/linear_stream', None),
             [
                 ('Lean back and experience the best of Red Bull TV', True, 'Watch Now'),
                 'https://dms.redbull.tv/v3/linear-borb/_v3/playlist.m3u8'
@@ -68,6 +67,24 @@ class ITTestRedbulltvClient(unittest.TestCase):
             expected[0]
         )
         self.assertNotEqual(result[0].get('url'), expected[1])
+
+    def test_search(self):
+        """
+        Test the Search functionality
+        """
+        test_data = ('https://appletv-v2.redbull.tv/search?q=follow', None)
+        result = self.redbulltv_client.get_items(*test_data)
+        self.assertGreater(len(result), 0)
+
+    def test_upcoming_live_event(self):
+        """
+        Test upcoming live events
+        """
+        result = self.redbulltv_client.get_items("https://appletv-v2.redbull.tv/views/calendar", "Upcoming Live Events")
+        result = self.redbulltv_client.get_items(result[0]["url"])
+        result = self.redbulltv_client.get_items([item for item in result if item["title"] == "Schedule"][0]["url"])
+        self.assertIn('event_date', result[0])
+        self.assertGreater(result[0]["event_date"], time.time())
 
 if __name__ == '__main__':
     unittest.main()

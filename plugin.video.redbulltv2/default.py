@@ -1,4 +1,4 @@
-import sys, urlparse, os, urllib
+import sys, urlparse, os, urllib, datetime, time
 import xbmcgui, xbmcplugin, xbmcaddon, xbmc
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'resources'))
@@ -14,7 +14,7 @@ class RedbullTV2(object):
         self.addon_handle = int(sys.argv[1])
         self.args = urlparse.parse_qs(sys.argv[2][1:])
         xbmcplugin.setContent(self.addon_handle, 'movies')
-        self.redbulltv_client = redbulltv.RedbullTVClient()
+        self.redbulltv_client = redbulltv.RedbullTVClient(self.addon.getSetting('video.resolution'))
 
     @staticmethod
     def get_keyboard(default="", heading="", hidden=False):
@@ -32,16 +32,24 @@ class RedbullTV2(object):
             url += self.get_keyboard()
 
         try:
-            items = self.redbulltv_client.get_items(url, category, self.addon.getSetting('video.resolution'))
-        except IOError as err:
+            items = self.redbulltv_client.get_items(url, category)
+        except IOError:
             xbmcgui.Dialog().ok("Error", "Error getting data from Redbull server.", "Try again shortly")
             return
 
         if not items:
             xbmcgui.Dialog().ok("No Results", "No results found", "Please try another menu or search")
             return
-        if items[0].get("is_stream"):
+        elif items[0].get("is_stream"):
             self.play_stream(items[0])
+        elif items[0].get("event_date"):
+            xbmcgui.Dialog().ok(
+                "Upcoming Event",
+                "This event is scheduled to start on:",
+                datetime.datetime.fromtimestamp(int(items[0].get("event_date"))).strftime('%a %-d %b %Y %H:%M') +
+                " (GMT+" + str(time.timezone / 3600 * -1) + ")"
+            )
+            return
         else:
             self.add_items(items)
 

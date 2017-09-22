@@ -4,7 +4,6 @@ import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from lib.utils import strip_url, build_url
 
-# python -B -m unittest discover
 class TestUtils(unittest.TestCase):
     def test_strip_url(self):
         example_urls = [
