@@ -53,8 +53,8 @@ class RedbullTVClient(object):
         details["event_date"] = element.findtext('.//rightLabel')
 
         # Get url of item, or name of selected category
-        if "onPlay" in element.attrib:
-            details["url"] = utils.strip_url(element.get("onPlay"))
+        if "onSelect" in element.attrib:
+            details["url"] = utils.strip_url(element.get("onSelect"))
             details["is_content"] = re.search(self.REDBULL_API + "(content|linear_stream)", details["url"]) is not None
         elif not details["event_date"]:
             details["category"] = details["title"]

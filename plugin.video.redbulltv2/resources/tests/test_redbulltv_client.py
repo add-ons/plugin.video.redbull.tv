@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, os, time
+import sys, os
 import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import lib.redbulltv_client as redbulltv
@@ -75,16 +75,6 @@ class ITTestRedbulltvClient(unittest.TestCase):
         test_data = ('https://appletv-v2.redbull.tv/search?q=follow', None)
         result = self.redbulltv_client.get_items(*test_data)
         self.assertGreater(len(result), 0)
-
-    def test_upcoming_live_event(self):
-        """
-        Test upcoming live events
-        """
-        result = self.redbulltv_client.get_items("https://appletv-v2.redbull.tv/views/calendar", "Upcoming Live Events")
-        result = self.redbulltv_client.get_items(result[0]["url"])
-        result = self.redbulltv_client.get_items([item for item in result if item["title"] == "Schedule"][0]["url"])
-        self.assertIn('event_date', result[0])
-        self.assertGreater(result[0]["event_date"], time.time())
 
 if __name__ == '__main__':
     unittest.main()

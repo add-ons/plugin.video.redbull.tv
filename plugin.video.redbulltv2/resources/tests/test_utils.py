@@ -26,13 +26,13 @@ class TestUtils(unittest.TestCase):
     def test_build_url(self):
         example_urls = [
             (
-                "plugin://plugin.video.redbulltv2/",
+                "plugin://plugin.video.redbull.tv/",
                 [
                     ('function', 'content'),
                     ('category', 'Winning Run'),
                     ('api_url', 'aHR0cHM6LyzA=\n')
                 ],
-                "plugin://plugin.video.redbulltv2/?function=content&category=Winning+Run&api_url=aHR0cHM6LyzA%3D%0A"
+                "plugin://plugin.video.redbull.tv/?function=content&category=Winning+Run&api_url=aHR0cHM6LyzA%3D%0A"
             ),
         ]
         for base_url, query, expected in example_urls:

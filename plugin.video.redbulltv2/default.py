@@ -7,7 +7,7 @@ import lib.redbulltv_client as redbulltv
 
 class RedbullTV2(object):
     def __init__(self):
-        self.id = 'plugin.video.redbulltv2'
+        self.id = 'plugin.video.redbull.tv'
         self.addon = xbmcaddon.Addon(self.id)
         self.icon = self.addon.getAddonInfo('icon')
         self.base_url = sys.argv[0]
