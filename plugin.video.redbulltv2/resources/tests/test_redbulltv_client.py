@@ -12,11 +12,11 @@ class ITTestRedbulltvClient(unittest.TestCase):
             (
                 None,
                 [
-                    {'url': 'https://appletv-v2.redbull.tv/views/discover', 'is_content': False, 'title': 'Discover'},
-                    {'url': 'https://appletv-v2.redbull.tv/views/tv', 'is_content': False, 'title': 'TV'},
-                    {'url': 'https://appletv-v2.redbull.tv/views/channels', 'is_content': False, 'title': 'Channels'},
-                    {'url': 'https://appletv-v2.redbull.tv/views/calendar', 'is_content': False, 'title': 'Calendar'},
-                    {'url': 'https://appletv-v2.redbull.tv/search?q=', 'is_content': False, 'title': 'Search'}
+                    {'url': 'https://appletv.redbull.tv/products/discover', 'is_content': False, 'title': 'Discover'},
+                    {'url': 'https://appletv.redbull.tv/products/tv', 'is_content': False, 'title': 'TV'},
+                    {'url': 'https://appletv.redbull.tv/products/channels', 'is_content': False, 'title': 'Channels'},
+                    {'url': 'https://appletv.redbull.tv/products/calendar', 'is_content': False, 'title': 'Calendar'},
+                    {'url': 'https://appletv.redbull.tv/search?q=', 'is_content': False, 'title': 'Search'}
                 ]
             ),
         ]
@@ -28,12 +28,11 @@ class ITTestRedbulltvClient(unittest.TestCase):
         List the categorires from the Discover Page
         Check for more than 5 categories and explicitly check the first 2
         """
-        test_data = ('https://appletv-v2.redbull.tv/views/discover', None)
+        test_data = ('https://appletv.redbull.tv/products/discover', None)
 
         result = self.redbulltv_client.get_items(*test_data)
         self.assertGreater(len(result), 5)
         self.assertEqual(result[0].get("category"), "Featured")
-        self.assertEqual(result[1].get("category"), "Daily Highlights")
 
     def test_get_category_items(self):
         """
@@ -41,8 +40,8 @@ class ITTestRedbulltvClient(unittest.TestCase):
         Check for more than 5 items in the 'Featured' & 'Daily Highlights' categories
         """
         test_data = [
-            ('https://appletv-v2.redbull.tv/views/discover', 'Featured'),
-            ('https://appletv-v2.redbull.tv/views/discover', 'Daily Highlights'),
+            ('https://appletv.redbull.tv/products/discover', 'Featured'),
+            ('https://appletv.redbull.tv/products/discover', 'Daily Highlights'),
         ]
 
         for inp in test_data:
@@ -54,7 +53,7 @@ class ITTestRedbulltvClient(unittest.TestCase):
         Test the Watch Now Live Stream and confirm a resolution specific playlist is returned
         """
         test_data = (
-            ('https://appletv-v2.redbull.tv/linear_stream', None),
+            ('https://appletv.redbull.tv/linear_stream', None),
             [
                 ('Lean back and experience the best of Red Bull TV', True, 'Watch Now'),
                 'https://dms.redbull.tv/v3/linear-borb/_v3/playlist.m3u8'
@@ -72,7 +71,7 @@ class ITTestRedbulltvClient(unittest.TestCase):
         """
         Test the Search functionality
         """
-        test_data = ('https://appletv-v2.redbull.tv/search?q=follow', None)
+        test_data = ('https://appletv.redbull.tv/search?q=follow', None)
         result = self.redbulltv_client.get_items(*test_data)
         self.assertGreater(len(result), 0)
 
