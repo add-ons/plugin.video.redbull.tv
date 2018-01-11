@@ -10,5 +10,5 @@ before_script:
 
 # command to run tests
 script:
-  - find plugin.video.redbulltv2 -iname "*.py" | xargs pylint --output-format=colorized --disable=line-too-long,wrong-import-position
-  - (cd plugin.video.redbulltv2 && python -B -m unittest discover)
+  - find plugin.video.redbulltv -iname "*.py" | xargs pylint --output-format=colorized --disable=line-too-long,wrong-import-position
+  - (cd plugin.video.redbulltv && python -B -m unittest discover)
