@@ -1,5 +1,5 @@
 import re, urllib2, os
-import utils
+import resources.lib.utils as utils
 
 class RedbullTVClient(object):
     REDBULL_API = "https://appletv.redbull.tv/"
