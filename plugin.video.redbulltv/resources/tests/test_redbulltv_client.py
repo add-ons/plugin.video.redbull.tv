@@ -25,14 +25,19 @@ class ITTestRedbulltvClient(unittest.TestCase):
 
     def test_get_discover_categories(self):
         """
-        List the categorires from the Discover Page
+        List the categories from the Discover Page
         Check for more than 5 categories and explicitly check the first 2
+        Check no duplicate categories in list
         """
         test_data = ('https://appletv.redbull.tv/products/discover', None)
 
         result = self.redbulltv_client.get_items(*test_data)
         self.assertGreater(len(result), 5)
         self.assertEqual(result[0].get("category"), "Featured")
+        self.assertEqual(
+            len(result),
+            len(set([c.get('category') for c in result])),
+        )
 
     def test_get_category_items(self):
         """

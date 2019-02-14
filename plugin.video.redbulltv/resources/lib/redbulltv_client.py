@@ -84,15 +84,14 @@ class RedbullTVClient(object):
             items.append(self.get_stream_details(xml.find('.//httpLiveStreamingVideoAsset')))
         # if no category is specified, find the categories or item collection
         elif category is None:
-            data = {
-                "collectionDividers": xml.findall('.//collectionDivider'),
-            }
+            # Prevent duplicates from collectionDividers with empty title tags.
+            collections = [elem for elem in xml.findall('.//collectionDivider')
+                if elem.find('title').text]
+
             # Show Categories if relevant
-            if data["collectionDividers"]:
+            if collections:
                 items += self.generate_items(
-                    xml.findall('.//showcase') +
-                    data["collectionDividers"],
-                    url)
+                    xml.findall('.//showcase') + collections, url)
             else:
                 items += self.generate_items(
                     xml.findall('.//twoLineMenuItem') +
