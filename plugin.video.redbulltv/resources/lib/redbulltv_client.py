@@ -101,18 +101,23 @@ class RedbullTVClient(object):
                     url)
         # if a category is specified, find the items for the specified category
         elif category is not None:
-            if category == 'Featured':
+            if category in ('Featured', 'Featured Events'):
                 items += self.generate_items(xml.findall('.//showcasePoster'))
             else:
                 collections = xml.iterfind(".//collectionDivider/../*")
                 for collection in collections:
-                    if collection.tag == 'collectionDivider' and collection.get("accessibilityLabel") == category:
-                        items += self.generate_items(collections.next().find('.//items').getchildren())
+                    if (
+                        collection.tag == 'collectionDivider'
+                        and collection.get("accessibilityLabel") == category
+                    ):
+                        elem = next(collections, None)
+                        # Skip end of page or closing collectionDividers
+                        if elem is None or elem.tag == 'collectionDivider':
+                            continue
+                        items += self.generate_items(
+                            list(elem.find('.//items')))
 
         return items
 
     def generate_items(self, xml_elements, url=None):
-        items = []
-        for item in xml_elements:
-            items.append(self.get_element_details(item, url))
-        return items
+        return [self.get_element_details(item, url) for item in xml_elements]

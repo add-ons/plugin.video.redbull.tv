@@ -41,17 +41,36 @@ class ITTestRedbulltvClient(unittest.TestCase):
 
     def test_get_category_items(self):
         """
-        List the items for a specific category on the Discover Page
-        Check for more than 5 items in the 'Featured' & 'Daily Highlights' categories
+        Check for more than 5 items in the 'Featured' & 'All Channels' categories
         """
-        test_data = [
-            ('https://appletv.redbull.tv/products/discover', 'Featured'),
-            ('https://appletv.redbull.tv/products/discover', 'Daily Highlights'),
-        ]
+        result = self.redbulltv_client.get_items(
+            'https://appletv.redbull.tv/products/discover', 'Featured')
+        self.assertGreater(len(result), 5)
+        result = self.redbulltv_client.get_items(
+            'https://appletv.redbull.tv/products/calendar', 'Featured Events')
+        self.assertGreater(len(result), 2)
+        result = self.redbulltv_client.get_items(
+            'https://appletv.redbull.tv/products/discover', 'Trending')
+        self.assertGreater(len(result), 5)
+        result = self.redbulltv_client.get_items(
+            'https://appletv.redbull.tv/products/channels', 'Formats')
+        self.assertGreater(len(result), 2)
+        result = self.redbulltv_client.get_items(
+            'https://appletv.redbull.tv/products/channels', 'All Channels')
+        self.assertGreater(len(result), 5)
 
-        for inp in test_data:
-            result = self.redbulltv_client.get_items(*inp)
-            self.assertGreater(len(result), 5)
+    def test_get_event_items(self):
+        """
+        Check for items in the first and last categories on the events page
+        """
+        categories = self.redbulltv_client.get_items(
+            'https://appletv.redbull.tv/products/events')
+        result = self.redbulltv_client.get_items(
+            'https://appletv.redbull.tv/products/events', categories[0]['category'])
+        self.assertGreaterEqual(len(result), 1)
+        result = self.redbulltv_client.get_items(
+            'https://appletv.redbull.tv/products/events', categories[-1]['category'])
+        self.assertGreaterEqual(len(result), 1)
 
     def test_watch_now_stream(self):
         """
