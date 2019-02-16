@@ -7,7 +7,7 @@ class RedbullTVClient(object):
         {"title": "Discover", "url": REDBULL_API + "products/discover", "is_content":False},
         {"title": "TV", "url": REDBULL_API + "products/tv", "is_content":False},
         {"title": "Channels", "url": REDBULL_API + "products/channels", "is_content":False},
-        {"title": "Calendar", "url": REDBULL_API + "products/calendar", "is_content":False},
+        {"title": "Events", "url": REDBULL_API + "products/calendar", "is_content":False},
         {"title": "Search", "url": REDBULL_API + "search?q=", "is_content":False},
     ]
 
