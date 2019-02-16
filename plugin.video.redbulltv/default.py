@@ -12,7 +12,7 @@ class RedbullTV2(object):
         self.base_url = sys.argv[0]
         self.addon_handle = int(sys.argv[1])
         self.args = urlparse.parse_qs(sys.argv[2][1:])
-        xbmcplugin.setContent(self.addon_handle, 'movies')
+        xbmcplugin.setContent(self.addon_handle, 'videos')
         self.redbulltv_client = redbulltv.RedbullTVClient(self.addon.getSetting('video.resolution'))
 
     @staticmethod
