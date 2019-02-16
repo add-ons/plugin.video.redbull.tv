@@ -86,7 +86,7 @@ class RedbullTV2(object):
             list_item = xbmcgui.ListItem(
                 item.get("title"),
                 iconImage="DefaultFolder.png",
-                thumbnailImage=item.get("image", self.icon),
+                thumbnailImage=item.get("image"),
             )
             list_item.setInfo(
                 type="Video",
