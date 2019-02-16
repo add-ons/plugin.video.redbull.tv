@@ -12,5 +12,9 @@
 		<website>http://www.redbull.tv/</website>
 		<platform>all</platform>
 		<source>https://github.com/andy-g/kodi.plugin.video.redbulltv2</source>
+		<assets>
+			<icon>resources/icon.png</icon>
+			<fanart>resources/fanart.jpg</fanart>
+		</assets>
 	</extension>
 </addon>
