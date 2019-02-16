@@ -1,14 +1,27 @@
 import re, urllib2, os
 import resources.lib.utils as utils
 
+
 class RedbullTVClient(object):
     REDBULL_API = "https://appletv.redbull.tv/"
     ROOT_MENU = [
-        {"title": "Discover", "url": REDBULL_API + "products/discover", "is_content":False},
-        {"title": "TV", "url": REDBULL_API + "products/tv", "is_content":False},
-        {"title": "Channels", "url": REDBULL_API + "products/channels", "is_content":False},
-        {"title": "Events", "url": REDBULL_API + "products/calendar", "is_content":False},
-        {"title": "Search", "url": REDBULL_API + "search?q=", "is_content":False},
+        {
+            "title": "Discover",
+            "url": REDBULL_API + "products/discover",
+            "is_content": False,
+        },
+        {"title": "TV", "url": REDBULL_API + "products/tv", "is_content": False},
+        {
+            "title": "Channels",
+            "url": REDBULL_API + "products/channels",
+            "is_content": False,
+        },
+        {
+            "title": "Events",
+            "url": REDBULL_API + "products/calendar",
+            "is_content": False,
+        },
+        {"title": "Search", "url": REDBULL_API + "search?q=", "is_content": False},
     ]
 
     def __init__(self, resolution=None):
@@ -17,11 +30,11 @@ class RedbullTVClient(object):
     @staticmethod
     def get_resolution_code(video_resolution_id):
         return {
-            "0" : "320x180",
-            "1" : "426x240",
-            "2" : "640x360",
-            "3" : "960x540",
-            "4" : "1280x720",
+            "0": "320x180",
+            "1": "426x240",
+            "2": "640x360",
+            "3": "960x540",
+            "4": "1280x720",
         }.get(video_resolution_id, "1920x1080")
 
     def get_stream_details(self, element):
@@ -29,7 +42,7 @@ class RedbullTVClient(object):
         description = element.findtext("description")
         image = element.find("image").get("src1080")
         url = element.findtext("mediaURL")
-        base_url = ''
+        base_url = ""
 
         # Try find the specific stream based on the users preferences
         try:
@@ -40,36 +53,53 @@ class RedbullTVClient(object):
 
             resolution = self.get_resolution_code(self.resolution)
             media_url = re.search(
-                "RESOLUTION=" + resolution + ".*\n(.*)",
-                playlists).group(1)
+                "RESOLUTION=" + resolution + ".*\n(.*)", playlists
+            ).group(1)
         except Exception:
             pass
         else:
             url = media_url
 
         # if url is relative, add the base path
-        if base_url != '' and not url.startswith('http'):
-            url = os.path.dirname(base_url) + '/' + url
+        if base_url != "" and not url.startswith("http"):
+            url = os.path.dirname(base_url) + "/" + url
 
-        return {"title":name, "url":url, "summary":description, "image": image, "is_stream":True}
+        return {
+            "title": name,
+            "url": url,
+            "summary": description,
+            "image": image,
+            "is_stream": True,
+        }
 
     def get_element_details(self, element, url=None):
-        details = {"url":url, "is_content":False}
-        subtitle = element.findtext('.//subtitle') or element.findtext('.//label2') or ""
-        details["title"] = (element.get("accessibilityLabel") or element.findtext('.//label')) + ((" - " + subtitle) if subtitle else "")
-        details["summary"] = element.findtext('.//summary')
-        details["image"] = element.find('.//image').get('src1080') if element.find('.//image') is not None else None
-        details["event_date"] = element.findtext('.//rightLabel')
+        details = {"url": url, "is_content": False}
+        subtitle = (
+            element.findtext(".//subtitle") or element.findtext(".//label2") or ""
+        )
+        details["title"] = (
+            element.get("accessibilityLabel") or element.findtext(".//label")
+        ) + ((" - " + subtitle) if subtitle else "")
+        details["summary"] = element.findtext(".//summary")
+        details["image"] = (
+            element.find(".//image").get("src1080")
+            if element.find(".//image") is not None
+            else None
+        )
+        details["event_date"] = element.findtext(".//rightLabel")
 
         # Get url of item, or name of selected category
         if "onSelect" in element.attrib:
             details["url"] = utils.strip_url(element.get("onSelect"))
-            details["is_content"] = re.search(self.REDBULL_API + "(content|linear_stream)", details["url"]) is not None
+            details["is_content"] = (
+                re.search(self.REDBULL_API + "(content|linear_stream)", details["url"])
+                is not None
+            )
         elif not details["event_date"]:
             details["category"] = details["title"]
 
         # Strip out any keys with empty values
-        return {k:v for k, v in details.iteritems() if v is not None}
+        return {k: v for k, v in details.iteritems() if v is not None}
 
     def get_items(self, url=None, category=None):
         # If no url is specified, return the root menu
@@ -80,42 +110,48 @@ class RedbullTVClient(object):
         items = []
 
         # if the current url is a media stream
-        if xml.find('.//httpLiveStreamingVideoAsset') is not None:
-            items.append(self.get_stream_details(xml.find('.//httpLiveStreamingVideoAsset')))
+        if xml.find(".//httpLiveStreamingVideoAsset") is not None:
+            items.append(
+                self.get_stream_details(xml.find(".//httpLiveStreamingVideoAsset"))
+            )
         # if no category is specified, find the categories or item collection
         elif category is None:
             # Prevent duplicates from collectionDividers with empty title tags.
-            collections = [elem for elem in xml.findall('.//collectionDivider')
-                if elem.find('title').text]
+            collections = [
+                elem
+                for elem in xml.findall(".//collectionDivider")
+                if elem.find("title").text
+            ]
 
             # Show Categories if relevant
             if collections:
                 items += self.generate_items(
-                    xml.findall('.//showcase') + collections, url)
+                    xml.findall(".//showcase") + collections, url
+                )
             else:
                 items += self.generate_items(
-                    xml.findall('.//twoLineMenuItem') +
-                    xml.findall('.//twoLineEnhancedMenuItem') +
-                    xml.findall('.//sixteenByNinePoster') +
-                    xml.findall('.//actionButton'),
-                    url)
+                    xml.findall(".//twoLineMenuItem")
+                    + xml.findall(".//twoLineEnhancedMenuItem")
+                    + xml.findall(".//sixteenByNinePoster")
+                    + xml.findall(".//actionButton"),
+                    url,
+                )
         # if a category is specified, find the items for the specified category
         elif category is not None:
-            if category in ('Featured', 'Featured Events'):
-                items += self.generate_items(xml.findall('.//showcasePoster'))
+            if category in ("Featured", "Featured Events"):
+                items += self.generate_items(xml.findall(".//showcasePoster"))
             else:
                 collections = xml.iterfind(".//collectionDivider/../*")
                 for collection in collections:
                     if (
-                        collection.tag == 'collectionDivider'
+                        collection.tag == "collectionDivider"
                         and collection.get("accessibilityLabel") == category
                     ):
                         elem = next(collections, None)
                         # Skip end of page or closing collectionDividers
-                        if elem is None or elem.tag == 'collectionDivider':
+                        if elem is None or elem.tag == "collectionDivider":
                             continue
-                        items += self.generate_items(
-                            list(elem.find('.//items')))
+                        items += self.generate_items(list(elem.find(".//items")))
 
         return items
 
