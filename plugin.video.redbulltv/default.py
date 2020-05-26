@@ -70,11 +70,11 @@ class RedbullTV(object):
                 params['is_stream'] = item["is_content"]
 
             url = utils.build_url(self.base_url, params)
-            list_item = xbmcgui.ListItem(
-                item.get("title"),
-                iconImage='DefaultFolder.png',
-                thumbnailImage=item.get("image", self.icon)
-            )
+            list_item = xbmcgui.ListItem(item.get("title"))
+            list_item.setArt({
+                "icon": item['icon'] if 'icon' in item else 'DefaultFolder.png',
+                "thumb": item['icon'] if 'icon' in item else item.get("image", self.icon)
+                })
             list_item.setInfo(type="Video", infoLabels={"Title": item["title"], "Plot": item.get("summary", None), "Duration": item.get("duration")})
             if item.get("is_content"):
                 list_item.setProperty('IsPlayable', 'true')

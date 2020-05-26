@@ -9,11 +9,11 @@ class RedbullTVClient(object):
     REDBULL_STREAMS = "https://dms.redbull.tv/v3/"
     REDBULL_API = "https://api.redbull.tv/v3/"
     ROOT_MENU = [
-        {"title": "Live TV", "url": REDBULL_STREAMS + "linear-borb/" + token + "/playlist.m3u8", "is_content": True, "is_stream": True},
-        {"title": "Discover", "url": REDBULL_API + "products/discover", "is_content":False},
-        {"title": "Channels", "url": REDBULL_API + "products/channels", "is_content":False},
-        {"title": "Calendar", "url": REDBULL_API + "products/calendar", "is_content":False},
-        {"title": "Search", "url": REDBULL_API + "search?q=", "is_content":False},
+        {"icon": "DefaultTVShows.png", "title": "Live TV", "url": REDBULL_STREAMS + "linear-borb/" + token + "/playlist.m3u8", "is_content": True},
+        {"icon": "DefaultMusicTop100.png", "title": "Discover", "url": REDBULL_API + "products/discover", "is_content":False},
+        {"icon": "DefaultVideoPlaylists.png", "title": "Browse", "url": REDBULL_API + "products/channels", "is_content":False},
+        {"icon": "DefaultYear.png", "title": "Events", "url": REDBULL_API + "products/calendar", "is_content":False},
+        {"icon": "DefaultAddonsSearch.png", "title": "Search", "url": REDBULL_API + "search?q=", "is_content":False},
     ]
     ELEMENT_TYPE = {"collection": 1, "product": 2}
   
