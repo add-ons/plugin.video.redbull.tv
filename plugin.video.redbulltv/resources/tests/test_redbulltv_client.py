@@ -1,135 +1,96 @@
 #!/usr/bin/env python
-import sys, os
+import sys, os, time
 import unittest
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import lib.redbulltv_client as redbulltv
 
-
 class ITTestRedbulltvClient(unittest.TestCase):
-    redbulltv_client = redbulltv.RedbullTVClient("4")
+    redbulltv_client = redbulltv.RedbullTVClient('4')
 
     def test_get_root_menu(self):
         test_data = [
             (
                 None,
                 [
-                    {
-                        "url": "https://appletv.redbull.tv/products/discover",
-                        "is_content": False,
-                        "title": "Discover",
-                    },
-                    {
-                        "url": "https://appletv.redbull.tv/products/tv",
-                        "is_content": False,
-                        "title": "TV",
-                    },
-                    {
-                        "url": "https://appletv.redbull.tv/products/channels",
-                        "is_content": False,
-                        "title": "Channels",
-                    },
-                    {
-                        "url": "https://appletv.redbull.tv/products/calendar",
-                        "is_content": False,
-                        "title": "Events",
-                    },
-                    {
-                        "url": "https://appletv.redbull.tv/search?q=",
-                        "is_content": False,
-                        "title": "Search",
-                    },
-                ],
-            )
+                    {'url': 'https://api.redbull.tv/v3/products/discover', 'is_content': False, 'title': 'Discover'},
+                    {'url': 'https://api.redbull.tv/v3/products/schedule', 'is_content': False, 'title': 'TV'},
+                    {'url': 'https://api.redbull.tv/v3/products/channels', 'is_content': False, 'title': 'Channels'},
+                    {'url': 'https://api.redbull.tv/v3/products/calendar', 'is_content': False, 'title': 'Calendar'},
+                    {'url': 'https://api.redbull.tv/v3/search?q=', 'is_content': False, 'title': 'Search'}
+                ]
+            ),
         ]
         for inp, expected in test_data:
             self.assertEqual(self.redbulltv_client.get_items(inp), expected)
 
     def test_get_discover_categories(self):
         """
-        List the categories from the Discover Page
+        List the categorires from the Discover Page
         Check for more than 5 categories and explicitly check the first 2
-        Check no duplicate categories in list
         """
-        test_data = ("https://appletv.redbull.tv/products/discover", None)
+        test_data = 'https://api.redbull.tv/v3/products/discover'
 
-        result = self.redbulltv_client.get_items(*test_data)
+        result = self.redbulltv_client.get_items(test_data)
+
         self.assertGreater(len(result), 5)
-        self.assertEqual(result[0].get("category"), "Featured")
-        self.assertEqual(len(result), len(set([c.get("category") for c in result])))
+        self.assertEqual(result[0].get("title"), "Featured")
+
+        # # TODO Order changed, Rather loop through an make sure Featured & Daily Highlights are in the list
+        # self.assertEqual(result[1].get("category"), "Daily Highlights")
 
     def test_get_category_items(self):
         """
-        Check for more than 5 items in the 'Featured' & 'All Channels' categories
+        List the items for a specific category on the Discover Page
+        Check for more than 5 items in the 'Featured' & 'Daily Highlights' categories
         """
-        result = self.redbulltv_client.get_items(
-            "https://appletv.redbull.tv/products/discover", "Featured"
-        )
-        self.assertGreater(len(result), 5)
-        result = self.redbulltv_client.get_items(
-            "https://appletv.redbull.tv/products/calendar", "Featured Events"
-        )
-        self.assertGreater(len(result), 2)
-        result = self.redbulltv_client.get_items(
-            "https://appletv.redbull.tv/products/discover", "Trending"
-        )
-        self.assertGreater(len(result), 5)
-        result = self.redbulltv_client.get_items(
-            "https://appletv.redbull.tv/products/channels", "Formats"
-        )
-        self.assertGreater(len(result), 2)
-        result = self.redbulltv_client.get_items(
-            "https://appletv.redbull.tv/products/channels", "All Channels"
-        )
-        self.assertGreater(len(result), 5)
+        test_data = [
+            ('https://api.redbull.tv/v3//collections/playlists::8492e568-626a-48a3-b0d7-6d11e0f00dc3'),
+            ('https://api.redbull.tv/v3//collections/playlists::3f81040a-2f31-4832-8e2e-545b1d39d173'),
+        ]
 
-    def test_get_event_items(self):
-        """
-        Check for items in the first and last categories on the events page
-        """
-        categories = self.redbulltv_client.get_items(
-            "https://appletv.redbull.tv/products/events"
-        )
-        result = self.redbulltv_client.get_items(
-            "https://appletv.redbull.tv/products/events", categories[0]["category"]
-        )
-        self.assertGreaterEqual(len(result), 1)
-        result = self.redbulltv_client.get_items(
-            "https://appletv.redbull.tv/products/events", categories[-1]["category"]
-        )
-        self.assertGreaterEqual(len(result), 1)
+        for inp in test_data:
+            result = self.redbulltv_client.get_items(inp)
+            self.assertGreater(len(result), 5)
 
     def test_watch_now_stream(self):
         """
         Test the Watch Now Live Stream and confirm a resolution specific playlist is returned
         """
         test_data = (
-            ("https://appletv.redbull.tv/linear_stream", None),
+            ('https://dms.redbull.tv/v3/linear-borb/_v3/playlist.m3u8'),
             [
-                ("Lean back and experience the best of Red Bull TV", True, "Watch Now"),
-                "https://dms.redbull.tv/v3/linear-borb/_v3/playlist.m3u8",
-            ],
+                'https://dms.redbull.tv/v3/linear-borb/_v3/playlist.m3u8'
+            ]
         )
         inp, expected = test_data
-        result = self.redbulltv_client.get_items(*inp)
-        self.assertEqual(
-            (
-                result[0].get("summary"),
-                result[0].get("is_stream"),
-                result[0].get("title"),
-            ),
-            expected[0],
-        )
-        self.assertNotEqual(result[0].get("url"), expected[1])
+        result = self.redbulltv_client.get_stream_url(inp)
+        self.assertNotEqual(result, expected[0])
 
     def test_search(self):
         """
         Test the Search functionality
         """
-        test_data = ("https://appletv.redbull.tv/search?q=follow", None)
-        result = self.redbulltv_client.get_items(*test_data)
+        test_data = ('https://api.redbull.tv/v3/search?q=drop')
+        result = self.redbulltv_client.get_items(test_data)
         self.assertGreater(len(result), 0)
 
+    def test_upcoming_live_event(self):
+        """
+        Test upcoming live events
+        """
+        result = self.redbulltv_client.get_items("https://api.redbull.tv/v3/products/calendar")
 
-if __name__ == "__main__":
+        # Choose 'Upcoming Live Events' and pick the first from the list
+        result = self.redbulltv_client.get_items([item for item in result if item["title"] == "Upcoming Live Events"][0]["url"])
+        result = self.redbulltv_client.get_items(result[0]["url"])
+
+        # Choose Schedule
+        result = self.redbulltv_client.get_items([item for item in result if item["title"] == "Schedule"][0]["url"])
+
+        # Find the first entry with an Upcoming Date
+        result = [item for item in result if 'event_date' in item][0]
+        self.assertIn('event_date', result)
+        self.assertGreater(result["event_date"], time.time())
+
+if __name__ == '__main__':
     unittest.main()
