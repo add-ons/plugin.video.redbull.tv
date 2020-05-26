@@ -9,11 +9,11 @@ class RedbullTVClient(object):
     REDBULL_STREAMS = "https://dms.redbull.tv/v3/"
     REDBULL_API = "https://api.redbull.tv/v3/"
     ROOT_MENU = [
-        {"icon": "DefaultTVShows.png", "title": "Live TV", "url": REDBULL_STREAMS + "linear-borb/" + token + "/playlist.m3u8", "is_content": True},
-        {"icon": "DefaultMusicTop100.png", "title": "Discover", "url": REDBULL_API + "products/discover", "is_content":False},
-        {"icon": "DefaultVideoPlaylists.png", "title": "Browse", "url": REDBULL_API + "products/channels", "is_content":False},
-        {"icon": "DefaultYear.png", "title": "Events", "url": REDBULL_API + "products/calendar", "is_content":False},
-        {"icon": "DefaultAddonsSearch.png", "title": "Search", "url": REDBULL_API + "search?q=", "is_content":False},
+        {"title": "Live TV", "url": REDBULL_STREAMS + "linear-borb/" + token + "/playlist.m3u8", "is_content": True},
+        {"title": "Discover", "url": REDBULL_API + "products/discover", "is_content":False},
+        {"title": "Browse", "url": REDBULL_API + "products/channels", "is_content":False},
+        {"title": "Events", "url": REDBULL_API + "products/calendar", "is_content":False},
+        {"title": "Search", "url": REDBULL_API + "search?q=", "is_content":False},
     ]
     ELEMENT_TYPE = {"collection": 1, "product": 2}
   
@@ -58,26 +58,47 @@ class RedbullTVClient(object):
         return url
 
     @staticmethod
-    def get_image_url(image_id, resources, width=500, quality=70):
-        url = "https://resources.redbull.tv/" + image_id + "/"
+    def get_image_url(id, resources, type, width=1024, quality=70):
+        url = "https://resources.redbull.tv/" + id + "/"
 
-        if "rbtv_cover_art_landscape" in resources:
-            url += "rbtv_cover_art_landscape/im"
-        elif "rbtv_display_art_landscape" in resources:
-            url += "rbtv_display_art_landscape/im"
-        elif "rbtv_background_landscape" in resources:
-            url += "rbtv_background_landscape/im"
+        if type == "fanart" and "rbtv_background_landscape" in resources:
+            url += "rbtv_background_landscape"
+        if type == "landscape":
+            if "rbtv_cover_art_landscape" in resources:
+                url += "rbtv_cover_art_landscape"
+            elif "rbtv_display_art_landscape" in resources:
+                url += "rbtv_display_art_landscape"
+            else:
+                return None
+        elif type == "banner":
+            if "rbtv_cover_art_banner" in resources:
+                url += "rbtv_cover_art_banner"
+            elif "rbtv_display_art_banner" in resources:
+                url += "rbtv_display_art_banner"
+            else:
+                return None
+        elif type == "poster":
+            if "rbtv_cover_art_portrait" in resources:
+                url += "rbtv_cover_art_portrait"
+            elif "rbtv_display_art_portrait" in resources:
+                url += "rbtv_display_art_portrait"
+            else:
+                return None
+        else:
+            return None
+
+        url+= "/im"
 
         if width:
-            url += ":i:w_500"
+            url += ":i:w_1024"
 
         if quality:
             url += ",q_70"
 
         return url
 
-    def get_element_details(self, element, element_type, parent_image_url=None):
-        details = {"is_content":False, "image": parent_image_url}
+    def get_element_details(self, element, element_type):
+        details = {"is_content":False}
         if element.get("playable") or element.get("action") == "play":
             details["is_content"] = True
             details["url"] = self.REDBULL_STREAMS + element["id"] + "/" + self.token + "/playlist.m3u8"
@@ -93,10 +114,14 @@ class RedbullTVClient(object):
         subtitle = element.get("subheading")
 
         details["title"] = (element.get("label") or element.get("title")) + ((" - " + subtitle) if subtitle else "")
-        details["summary"] = element.get("long_description")
+        details["summary"] = element.get("long_description") if element.get("long_description") and len(element.get("long_description")) > 0 else element.get("short_description")
         if element.get("resources"):
-            # Check for resource, possibly have a look for resources based on preferences. Handle res accordingly
-            details["image"] = self.get_image_url(element.get("id"), element.get("resources"))
+            #web_pdb.set_trace()
+            details["landscape"] = self.get_image_url(element.get("id"), element.get("resources"), "landscape")
+            details["fanart"] = self.get_image_url(element.get("id"), element.get("resources"), "landscape")
+            details["banner"] = self.get_image_url(element.get("id"), element.get("resources"), "banner")
+            details["thumb"] = self.get_image_url(element.get("id"), element.get("resources"), "thumb")
+            details["poster"] = self.get_image_url(element.get("id"), element.get("resources"), "poster")
 
         # Strip out any keys with empty values
         return {k:v for k, v in details.iteritems() if v is not None}
@@ -111,12 +136,10 @@ class RedbullTVClient(object):
 
         result = utils.get_json(url+("?", "&")["?" in url]+"limit="+str(limit)+"&offset="+str((page-1)*limit), self.token)
 
-        image_url = self.get_image_url(result.get("id"), result.get("resources")) if result.get("resources") else None
-
         if 'links' in result:
             links = result["links"]
             for link in links:
-                items.append(self.get_element_details(link, self.ELEMENT_TYPE["product"], image_url))
+                items.append(self.get_element_details(link, self.ELEMENT_TYPE["product"]))
         
         if 'collections' in result:
             collections = result["collections"]
@@ -131,7 +154,7 @@ class RedbullTVClient(object):
         if 'items' in result:
             result_items = result["items"]
             for result_item in result_items:
-                items.append(self.get_element_details(result_item, self.ELEMENT_TYPE["product"], image_url))
+                items.append(self.get_element_details(result_item, self.ELEMENT_TYPE["product"]))
 
         # Add next item if meta.total > meta.offset + meta.limit
         # print("client result count: "+str(len(items)))

@@ -71,10 +71,17 @@ class RedbullTV(object):
 
             url = utils.build_url(self.base_url, params)
             list_item = xbmcgui.ListItem(item.get("title"))
-            list_item.setArt({
-                "icon": item['icon'] if 'icon' in item else 'DefaultFolder.png',
-                "thumb": item['icon'] if 'icon' in item else item.get("image", self.icon)
-                })
+            list_item.setArt({"thumb": item['landscape'] if 'landscape' in item else self.icon})
+
+            if 'fanart' in item: 
+                list_item.setArt({"fanart": item['fanart']})
+            if 'landscape' in item:
+                list_item.setArt({"landscape": item['landscape']})
+            if 'banner' in item:
+                list_item.setArt({"banner": item['banner']})
+            if 'poster' in item:
+                list_item.setArt({"poster": item['poster']})
+
             list_item.setInfo(type="Video", infoLabels={"Title": item["title"], "Plot": item.get("summary", None), "Duration": item.get("duration")})
             if item.get("is_content"):
                 list_item.setProperty('IsPlayable', 'true')
