@@ -122,7 +122,7 @@ class RedbullTVClient(object):
             collections = result["collections"]
 
             # Handle Search results
-            if collections[0].get("collection_type") == "top_results":
+            if len(collections) > 0 and collections[0].get("collection_type") == "top_results":
                 result["items"] = collections[0]["items"]
             else:
                 for collection in collections:
