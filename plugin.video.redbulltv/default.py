@@ -1,5 +1,6 @@
 import sys, urlparse, urllib, time
 import xbmcgui, xbmcplugin, xbmcaddon, xbmc
+import web_pdb #web_pdb.set_trace()
 
 from resources.lib import utils
 from resources.lib import redbulltv_client as redbulltv
@@ -35,6 +36,7 @@ class RedbullTV(object):
         if is_stream:
             self.play_stream(url)
             return
+
         try:
             items = self.redbulltv_client.get_items(url)
         except IOError:

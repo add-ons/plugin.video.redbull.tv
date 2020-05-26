@@ -1,21 +1,22 @@
 import re, urllib2, os
 import resources.lib.utils as utils
-import web_pdb
+import web_pdb #web_pdb.set_trace()
 
 class RedbullTVClient(object):
+
+    token = utils.get_json("https://api.redbull.tv/v3/session?category=smart_tv&os_family=android")["token"]
+
     REDBULL_STREAMS = "https://dms.redbull.tv/v3/"
     REDBULL_API = "https://api.redbull.tv/v3/"
     ROOT_MENU = [
+        {"title": "Live TV", "url": REDBULL_STREAMS + "linear-borb/" + token + "/playlist.m3u8", "is_content": True, "is_stream": True},
         {"title": "Discover", "url": REDBULL_API + "products/discover", "is_content":False},
-        {"title": "TV", "url": REDBULL_API + "products/schedule", "is_content":False},
         {"title": "Channels", "url": REDBULL_API + "products/channels", "is_content":False},
         {"title": "Calendar", "url": REDBULL_API + "products/calendar", "is_content":False},
         {"title": "Search", "url": REDBULL_API + "search?q=", "is_content":False},
     ]
     ELEMENT_TYPE = {"collection": 1, "product": 2}
-
-    token = None
-
+  
     def __init__(self, resolution=None):
         self.resolution = resolution
 
@@ -101,19 +102,17 @@ class RedbullTVClient(object):
         return {k:v for k, v in details.iteritems() if v is not None}
 
     def get_items(self, url=None, page=1, limit=20):
+
+        items = []
+
         # If no url is specified, return the root menu
         if url is None:
             return self.ROOT_MENU
 
-        if self.token is None:
-            session_response = utils.get_json("https://api.redbull.tv/v3/session?category=smart_tv&os_family=android")
-            self.token = session_response["token"]
-        web_pdb.set_trace()
         result = utils.get_json(url+("?", "&")["?" in url]+"limit="+str(limit)+"&offset="+str((page-1)*limit), self.token)
 
         image_url = self.get_image_url(result.get("id"), result.get("resources")) if result.get("resources") else None
 
-        items = []
         if 'links' in result:
             links = result["links"]
             for link in links:
