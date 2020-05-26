@@ -64,7 +64,9 @@ class RedbullTV(object):
 
     def add_items(self, items):
         for item in items:
-            params = {'api_url' : item["url"].encode('base64')}
+            params = {
+                'api_url': item["url"].encode('base64'),
+                }
 
             if "is_content" in item:
                 params['is_stream'] = item["is_content"]

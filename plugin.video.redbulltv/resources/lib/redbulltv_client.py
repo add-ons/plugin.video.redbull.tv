@@ -12,7 +12,7 @@ class RedbullTVClient(object):
         {"title": "Live TV", "url": REDBULL_STREAMS + "linear-borb/" + token + "/playlist.m3u8", "is_content": True},
         {"title": "Discover", "url": REDBULL_API + "products/discover", "is_content":False},
         {"title": "Browse", "url": REDBULL_API + "products/channels", "is_content":False},
-        {"title": "Events", "url": REDBULL_API + "products/calendar", "is_content":False},
+        {"title": "Events", "url": REDBULL_API + "products/events", "is_content":False},
         {"title": "Search", "url": REDBULL_API + "search?q=", "is_content":False},
     ]
     ELEMENT_TYPE = {"collection": 1, "product": 2}
@@ -68,6 +68,8 @@ class RedbullTVClient(object):
                 url += "rbtv_cover_art_landscape"
             elif "rbtv_display_art_landscape" in resources:
                 url += "rbtv_display_art_landscape"
+            elif "rbtv_background_landscape" in resources:
+                url += "rbtv_background_landscape"
             else:
                 return None
         elif type == "banner":
