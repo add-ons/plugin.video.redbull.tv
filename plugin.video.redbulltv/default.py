@@ -84,8 +84,6 @@ class RedbullTV(object):
             if 'poster' in item:
                 list_item.setArt({"poster": item['poster']})
             
-            list_item.setLabel("hello label 1")
-            list_item.setLabel2("hello label 2")
             infoLabels = {
                 "title": item["title"], 
                 "plot": item.get("summary", None), 
