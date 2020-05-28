@@ -113,9 +113,9 @@ class RedbullTVClient(object):
             details["url"] = self.REDBULL_API + "collections/" + element["id"] # + "?limit=20"
         elif element_type == self.ELEMENT_TYPE["product"]:
             details["url"] = self.REDBULL_API + "products/" + element["id"] #+"?limit=20"
-        subtitle = element.get("subheading")
 
-        details["title"] = (element.get("label") or element.get("title")) + ((" - " + subtitle) if subtitle else "")
+        details["title"] = (element.get("label") or element.get("title"))
+        details["subheading"] = element.get("subheading")
         details["summary"] = element.get("long_description") if element.get("long_description") and len(element.get("long_description")) > 0 else element.get("short_description")
         if element.get("resources"):
             #web_pdb.set_trace()

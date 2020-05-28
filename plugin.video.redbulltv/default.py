@@ -83,8 +83,16 @@ class RedbullTV(object):
                 list_item.setArt({"banner": item['banner']})
             if 'poster' in item:
                 list_item.setArt({"poster": item['poster']})
-
-            list_item.setInfo(type="Video", infoLabels={"Title": item["title"], "Plot": item.get("summary", None), "Duration": item.get("duration")})
+            
+            list_item.setLabel("hello label 1")
+            list_item.setLabel2("hello label 2")
+            infoLabels = {
+                "title": item["title"], 
+                "plot": item.get("summary", None), 
+                "genre": item.get("subheading", None), 
+                "duration": item.get("duration")
+            }
+            list_item.setInfo(type="Video", infoLabels=infoLabels)
             if item.get("is_content"):
                 list_item.setProperty('IsPlayable', 'true')
             xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=url, listitem=list_item, isFolder=(not item["is_content"]))
