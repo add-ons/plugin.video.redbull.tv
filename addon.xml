@@ -17,7 +17,7 @@
 		<source>https://github.com/piejanssens/kodi.plugin.video.redbulltv</source>
 		<assets>
 			<icon>resources/icon.png</icon>
-			<fanart>resources/fanart.png</fanart>
+			<fanart>resources/fanart.jpg</fanart>
 		</assets>
 		<news>
 			3.0.0 Harder, Better, Faster, Stronger
