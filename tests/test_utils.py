@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-import sys, os
+from resources.lib.utils import strip_url, build_url
+import sys
+import os
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from lib.utils import strip_url, build_url
 
 
 class TestUtils(unittest.TestCase):

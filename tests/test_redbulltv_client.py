@@ -1,27 +1,14 @@
 #!/usr/bin/env python
-import sys, os, time
+import resources.lib.redbulltv_client as redbulltv
+import sys
+import os
+import time
 import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-import lib.redbulltv_client as redbulltv
+
 
 class ITTestRedbulltvClient(unittest.TestCase):
     redbulltv_client = redbulltv.RedbullTVClient('4')
-
-    def test_get_root_menu(self):
-        test_data = [
-            (
-                None,
-                [
-                    {'url': 'https://api.redbull.tv/v3/products/discover', 'is_content': False, 'title': 'Discover'},
-                    {'url': 'https://api.redbull.tv/v3/products/schedule', 'is_content': False, 'title': 'TV'},
-                    {'url': 'https://api.redbull.tv/v3/products/channels', 'is_content': False, 'title': 'Channels'},
-                    {'url': 'https://api.redbull.tv/v3/products/calendar', 'is_content': False, 'title': 'Calendar'},
-                    {'url': 'https://api.redbull.tv/v3/search?q=', 'is_content': False, 'title': 'Search'}
-                ]
-            ),
-        ]
-        for inp, expected in test_data:
-            self.assertEqual(self.redbulltv_client.get_items(inp), expected)
 
     def test_get_discover_categories(self):
         """
@@ -78,19 +65,23 @@ class ITTestRedbulltvClient(unittest.TestCase):
         """
         Test upcoming live events
         """
-        result = self.redbulltv_client.get_items("https://api.redbull.tv/v3/products/calendar")
+        result = self.redbulltv_client.get_items(
+            "https://api.redbull.tv/v3/products/calendar")
 
         # Choose 'Upcoming Live Events' and pick the first from the list
-        result = self.redbulltv_client.get_items([item for item in result if item["title"] == "Upcoming Live Events"][0]["url"])
+        result = self.redbulltv_client.get_items(
+            [item for item in result if item["title"] == "Upcoming Live Events"][0]["url"])
         result = self.redbulltv_client.get_items(result[0]["url"])
 
         # Choose Schedule
-        result = self.redbulltv_client.get_items([item for item in result if item["title"] == "Schedule"][0]["url"])
+        result = self.redbulltv_client.get_items(
+            [item for item in result if item["title"] == "Schedule"][0]["url"])
 
         # Find the first entry with an Upcoming Date
         result = [item for item in result if 'event_date' in item][0]
         self.assertIn('event_date', result)
         self.assertGreater(result["event_date"], time.time())
+
 
 if __name__ == '__main__':
     unittest.main()
