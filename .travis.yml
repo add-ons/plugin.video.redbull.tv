@@ -10,5 +10,5 @@ before_script:
 
 # command to run tests
 script:
-  - find . "*.py" | xargs pylint --output-format=colorized --disable=line-too-long,wrong-import-position
-  - (python -B -m unittest discover)
+  - find . -name "*.py" | xargs pylint --output-format=colorized --disable=line-too-long,wrong-import-position
+  - python -B -m unittest discover
