@@ -46,9 +46,6 @@ def run(params):
     """ Run the routing plugin """
     routing.run(params)
 
-def build_url(base_url, query):
-    return base_url + '?' + urllib.urlencode(query)
-
 def get_json(url, token=None):
     try:
         request = urllib2.Request(url)
@@ -79,15 +76,14 @@ class RedBullTV:
 
     def navigation(self):
         url = self.args.get("api_url")[0].decode('base64') if self.args.get("api_url") else None
-        is_stream = self.args.get('is_stream', [False])[0] == "True"
-
-        if url and "search?q=" in url:
-            url += kodiutils.get_search_string()
 
         # If Stream url is available
-        if is_stream:
+        if self.args.get('is_stream', [False])[0] == "True":
             self.play_stream(url)
             return
+        
+        if url and "search?q=" in url:
+            url += kodiutils.get_search_string()
 
         try:
             items = self.get_items(url)
@@ -119,10 +115,9 @@ class RedBullTV:
             params = {
                 'api_url': item["url"].encode('base64'),
                 }
-
-            url = build_url(self.base_url, params)
+                
             list_item = xbmcgui.ListItem(item.get("title"))
-            list_item.setArt({"thumb": item['landscape'] if 'landscape' in item else kodiutils.getAddonInfo('icon')})
+            list_item.setArt({"thumb": item['landscape'] if 'landscape' in item else kodiutils.get_addon_info('icon')})
 
             if item.get("is_content"):
                 params['is_stream'] = item["is_content"]
@@ -143,7 +138,8 @@ class RedBullTV:
                 "duration": item.get("duration")
             }
             list_item.setInfo(type="Video", infoLabels=info_labels)
-            xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=url, listitem=list_item, isFolder=(not item["is_content"]))
+            nav_url = self.base_url + '?' + urllib.urlencode(params)
+            xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=nav_url, listitem=list_item, isFolder=(not item["is_content"]))
 
     def play_stream(self, streams_url):
         stream_url = self.get_stream_url(streams_url)
