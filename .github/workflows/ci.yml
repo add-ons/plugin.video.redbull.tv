@@ -41,6 +41,9 @@ jobs:
       run: python -m proxy --hostname 127.0.0.1 --log-level DEBUG &
       if: matrix.python-version == '3.6' || matrix.python-version == '3.7' || matrix.python-version == '3.8'
       #if: contains(["3.6", "3.7", "3.8"], matrix.python-version)
+      - name: Run unit tests
+      run: coverage run -m unittest discover
+      if: always()
     - name: Upload code coverage to CodeCov
       uses: codecov/codecov-action@v1
       continue-on-error: true
