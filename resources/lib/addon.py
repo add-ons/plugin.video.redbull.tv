@@ -142,46 +142,8 @@ class RedBullTV:
             xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=nav_url, listitem=list_item, isFolder=(not item["is_content"]))
 
     def play_stream(self, streams_url):
-        stream_url = self.get_stream_url(streams_url)
-        item = xbmcgui.ListItem(path=stream_url)
-        xbmcplugin.setResolvedUrl(handle=self.addon_handle, succeeded=True, listitem=item)
-
-    @staticmethod
-    def get_resolution_code(video_resolution_id):
-        return {
-            "0": "320x180",
-            "1": "426x240",
-            "2": "640x360",
-            "3": "960x540",
-            "4": "1280x720",
-        }.get(video_resolution_id, "1920x1080")
-
-    def get_stream_url(self, streams_url):
-        url = streams_url
-        base_url = ''
-
-        # Try find stream for specific resolution stream, if that failed will use the
-        # playlist url passed in and kodi will choose a stream
-        try:
-            response = urllib2.urlopen(url)
-            # Required to get base url in case of a redirect, to use for relative paths
-            base_url = response.geturl()
-            playlists = response.read()
-
-            resolution = self.get_resolution_code(kodiutils.getSetting('video.resolution'))
-            media_url = re.search(
-                "RESOLUTION=" + resolution + ".*\n(.*)",
-                playlists).group(1)
-        except Exception:
-            pass
-        else:
-            url = media_url
-
-        # if url is relative, add the base path
-        if base_url != '' and not url.startswith('http'):
-            url = os.path.dirname(base_url) + '/' + url
-
-        return url
+        kodiutils.play(streams_url)
+        return
 
     @staticmethod
     def get_image_url(id, resources, type, width=1024, quality=70):

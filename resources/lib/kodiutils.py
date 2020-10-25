@@ -208,12 +208,9 @@ def play(stream, license_key=None, title=None, art_dict=None, info_dict=None, pr
         play_item.setProperty('inputstream', 'inputstream.adaptive')
     else:
         play_item.setProperty('inputstreamaddon', 'inputstream.adaptive')
-    play_item.setProperty('inputstream.adaptive.manifest_type', 'mpd')
-    play_item.setMimeType('application/dash+xml')
+    play_item.setProperty('inputstream.adaptive.manifest_type', 'hls')
+    #play_item.setMimeType('application/dash+xml')
     play_item.setContentLookup(False)
-
-    play_item.setProperty('inputstream.adaptive.license_type', 'com.widevine.alpha')
-    play_item.setProperty('inputstream.adaptive.license_key', license_key)
 
     xbmcplugin.setResolvedUrl(routing.handle, True, listitem=play_item)
 
