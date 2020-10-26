@@ -1,10 +1,13 @@
 #!/usr/bin/env python
-import resources.lib.redbulltv_client as redbulltv
-import sys
+from __future__ import absolute_import, division, unicode_literals
+
 import os
+import sys
 import time
 import unittest
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../resources/lib'))
+import redbulltv_client as redbulltv
 
 
 class ITTestRedbulltvClient(unittest.TestCase):

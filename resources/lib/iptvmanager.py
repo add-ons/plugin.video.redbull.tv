@@ -1,16 +1,9 @@
 # -*- coding: utf-8 -*-
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 """ Implementation of IPTVManager class """
 
 from __future__ import absolute_import, division, unicode_literals
-
-import logging
-from collections import defaultdict
-from datetime import datetime
-
-from resources.lib import kodiutils
-from resources.lib.addon import RedBullTV
-
-_LOGGER = logging.getLogger(__name__)
+import kodiutils
 
 
 class IPTVManager:
@@ -37,7 +30,7 @@ class IPTVManager:
         return send
 
     @via_socket
-    def send_channels(self):
+    def send_channels(self):  # pylint: disable=no-method-argument,no-self-use
         """ Return JSON-STREAMS formatted information to IPTV Manager. """
 
         streams = []
@@ -53,13 +46,16 @@ class IPTVManager:
         return dict(version=1, streams=streams)
 
     @via_socket
-    def send_epg(self):
+    def send_epg(self):  # pylint: disable=no-method-argument,no-self-use
         """ Return JSON-EPG formatted information to IPTV Manager. """
+        from addon import RedBullTV
+        from collections import defaultdict
+        from datetime import datetime
         epg = defaultdict(list)
 
-        rb = RedBullTV()
+        redbull = RedBullTV()
 
-        for item in rb.get_epg()['items']:
+        for item in redbull.get_epg()['items']:
             epg['redbulltv'].append(dict(
                 start=datetime.strptime(item['start_time'], "%Y-%m-%dT%H:%M:%S.%fZ").isoformat(),
                 stop=datetime.strptime(item['end_time'], "%Y-%m-%dT%H:%M:%S.%fZ").isoformat(),
@@ -68,7 +64,7 @@ class IPTVManager:
                 subtitle=item['subheading'],
                 episode=None,
                 genre="Sport",
-                image=rb.get_image_url(item['id'], item['resources'], "landscape"),
+                image=redbull.get_image_url(item['id'], item['resources'], 'landscape'),
                 date=None,
                 stream=None
             ))
