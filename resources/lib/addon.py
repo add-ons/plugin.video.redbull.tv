@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 """ Addon code """
 
 from __future__ import absolute_import, division, unicode_literals
 
+import json
 import logging
-import sys, time, re, os
-import urlparse
-import urllib, urllib2, json
-
-import xbmcgui, xbmcplugin, xbmcaddon, xbmc
+import time
+import urllib
+import urllib2
 from routing import Plugin
-from resources.lib import kodilogging
-from resources.lib import kodiutils
+
+import xbmc
+import xbmcgui
+import xbmcplugin
+
+import kodilogging
+from kodiutils import addon_icon, addon_id, get_search_string, localize, play
 
 kodilogging.config()
 routing = Plugin()  # pylint: disable=invalid-name
@@ -21,30 +26,36 @@ REDBULL_API = "https://api.redbull.tv/v3/"
 COLLECTION = 1
 PRODUCT = 2
 
+
 @routing.route('/')
 def show_main_menu():
     """ Show the main menu """
     RedBullTV().navigation()
 
+
 @routing.route('/iptv/play')
 def iptv_play():
     RedBullTV().play_live()
 
+
 @routing.route('/iptv/channels')
 def iptv_channels():
     """ Generate channel data for the Kodi PVR integration """
-    from resources.lib.iptvmanager import IPTVManager
+    from iptvmanager import IPTVManager
     IPTVManager(int(routing.args['port'][0])).send_channels()  # pylint: disable=too-many-function-args
+
 
 @routing.route('/iptv/epg')
 def iptv_epg():
     """ Generate EPG data for the Kodi PVR integration """
-    from resources.lib.iptvmanager import IPTVManager
+    from iptvmanager import IPTVManager
     IPTVManager(int(routing.args['port'][0])).send_epg()  # pylint: disable=too-many-function-args
+
 
 def run(params):
     """ Run the routing plugin """
     routing.run(params)
+
 
 def get_json(url, token=None):
     try:
@@ -57,14 +68,15 @@ def get_json(url, token=None):
     else:
         return json.loads(response.read())
 
+
 class RedBullTV:
 
     def __init__(self):
-        self.base_url = sys.argv[0]
-        self.addon_handle = int(sys.argv[1])
-        self.args = urlparse.parse_qs(sys.argv[2][1:])
+        self.base_url = 'plugin://' + addon_id() + routing.path
+        self.addon_handle = routing.handle
+        self.args = routing.args
         xbmcplugin.setContent(self.addon_handle, 'videos')
-        self.default_view_mode = 55 # Wide List
+        self.default_view_mode = 55  # Wide List
         self.token = get_json(REDBULL_API + "session?category=smart_tv&os_family=android")["token"]
 
     def get_epg(self):
@@ -81,43 +93,40 @@ class RedBullTV:
         if self.args.get('is_stream', [False])[0] == "True":
             self.play_stream(url)
             return
-        
+
         if url and "search?q=" in url:
-            url += kodiutils.get_search_string()
+            url += get_search_string()
 
         try:
             items = self.get_items(url)
         except IOError:
             # Error getting data from Redbull server
-            xbmcgui.Dialog().ok(self.addon.getLocalizedString(30020), self.addon.getLocalizedString(30021), self.addon.getLocalizedString(30022))
+            xbmcgui.Dialog().ok(localize(30020), localize(30021), localize(30022))
             return
 
         if not items:
             # No results found
-            xbmcgui.Dialog().ok(self.addon.getLocalizedString(30023), self.addon.getLocalizedString(30024), self.addon.getLocalizedString(30025))
+            xbmcgui.Dialog().ok(localize(30023), localize(30024), localize(30025))
             return
-        elif items[0].get("event_date"):
+
+        if items[0].get("event_date"):
             # Scheduled Event Time
-            xbmcgui.Dialog().ok(
-                self.addon.getLocalizedString(30026),
-                self.addon.getLocalizedString(30027),
-                items[0].get("event_date") + " (GMT+" + str(time.timezone / 3600 * -1) + ")"
-            )
+            xbmcgui.Dialog().ok(localize(30026), localize(30027), items[0].get('event_date') + ' (GMT+' + str(time.timezone / 3600 * -1) + ')')
             return
-        else:
-            self.add_items(items)
+
+        self.add_items(items)
 
         xbmc.executebuiltin('Container.SetViewMode(%d)' % self.default_view_mode)
         xbmcplugin.endOfDirectory(self.addon_handle)
 
     def add_items(self, items):
         for item in items:
-            params = {
-                'api_url': item["url"].encode('base64'),
-                }
-                
+            params = dict(
+                api_url=item["url"].encode('base64'),
+            )
+
             list_item = xbmcgui.ListItem(item.get("title"))
-            list_item.setArt({"thumb": item['landscape'] if 'landscape' in item else kodiutils.get_addon_info('icon')})
+            list_item.setArt({"thumb": item['landscape'] if 'landscape' in item else addon_icon()})
 
             if item.get("is_content"):
                 params['is_stream'] = item["is_content"]
@@ -141,17 +150,17 @@ class RedBullTV:
             nav_url = self.base_url + '?' + urllib.urlencode(params)
             xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=nav_url, listitem=list_item, isFolder=(not item["is_content"]))
 
-    def play_stream(self, streams_url):
-        kodiutils.play(streams_url)
-        return
+    @staticmethod
+    def play_stream(streams_url):
+        play(streams_url)
 
     @staticmethod
-    def get_image_url(id, resources, type, width=1024, quality=70):
-        url = "https://resources.redbull.tv/" + id + "/"
+    def get_image_url(element_id, resources, element_type, width=1024, quality=70):
+        url = "https://resources.redbull.tv/" + element_id + "/"
 
-        if type == "fanart" and "rbtv_background_landscape" in resources:
+        if element_type == "fanart" and "rbtv_background_landscape" in resources:
             url += "rbtv_background_landscape"
-        if type == "landscape":
+        if element_type == "landscape":
             if "rbtv_cover_art_landscape" in resources:
                 url += "rbtv_cover_art_landscape"
             elif "rbtv_display_art_landscape" in resources:
@@ -160,14 +169,14 @@ class RedBullTV:
                 url += "rbtv_background_landscape"
             else:
                 return None
-        elif type == "banner":
+        elif element_type == "banner":
             if "rbtv_cover_art_banner" in resources:
                 url += "rbtv_cover_art_banner"
             elif "rbtv_display_art_banner" in resources:
                 url += "rbtv_display_art_banner"
             else:
                 return None
-        elif type == "poster":
+        elif element_type == "poster":
             if "rbtv_cover_art_portrait" in resources:
                 url += "rbtv_cover_art_portrait"
             elif "rbtv_display_art_portrait" in resources:
@@ -207,8 +216,7 @@ class RedBullTV:
 
         details["title"] = (element.get("label") or element.get("title"))
         details["subheading"] = element.get("subheading")
-        details["summary"] = element.get("long_description") if element.get("long_description") and len(
-            element.get("long_description")) > 0 else element.get("short_description")
+        details["summary"] = element.get("long_description") if element.get("long_description") else element.get("short_description")
         if element.get("resources"):
             details["landscape"] = self.get_image_url(element.get("id"), element.get("resources"), "landscape")
             details["fanart"] = self.get_image_url(element.get("id"), element.get("resources"), "landscape")
@@ -217,7 +225,7 @@ class RedBullTV:
             details["poster"] = self.get_image_url(element.get("id"), element.get("resources"), "poster")
 
         # Strip out any keys with empty values
-        return {k: v for k, v in details.iteritems() if v is not None}
+        return {k: v for k, v in details.items() if v is not None}
 
     def get_items(self, url=None, page=1, limit=20):
 
@@ -233,7 +241,7 @@ class RedBullTV:
                 {"title": "Search", "url": REDBULL_API + "search?q=", "is_content": False},
             ]
 
-        result = get_json(url+("?", "&")["?" in url]+"limit="+str(limit)+"&offset="+str((page-1)*limit), self.token)
+        result = get_json(url + ('?', '&')['?' in url] + 'limit=' + str(limit) + '&offset=' + str((page - 1) * limit), self.token)
 
         if 'links' in result:
             links = result["links"]
@@ -245,7 +253,7 @@ class RedBullTV:
             collections = result["collections"]
 
             # Handle Search results
-            if len(collections) > 0 and collections[0].get("collection_type") == "top_results":
+            if collections and collections[0].get("collection_type") == "top_results":
                 result["items"] = collections[0]["items"]
             else:
                 for collection in collections:

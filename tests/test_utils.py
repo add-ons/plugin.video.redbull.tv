@@ -1,10 +1,12 @@
 #!/usr/bin/env python
-from resources.lib.utils import strip_url, build_url
-import sys
+from __future__ import absolute_import, division, unicode_literals
+
 import os
+import sys
 import unittest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../resources/lib'))
+from utils import strip_url, build_url
 
 
 class TestUtils(unittest.TestCase):

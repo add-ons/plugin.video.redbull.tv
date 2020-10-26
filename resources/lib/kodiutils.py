@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 """All functionality that requires Kodi imports"""
 
 from __future__ import absolute_import, division, unicode_literals
@@ -116,13 +117,13 @@ def addon_profile():
 
 def url_for(name, *args, **kwargs):
     """Wrapper for routing.url_for() to lookup by name"""
-    import resources.lib.addon as addon
+    import addon
     return addon.routing.url_for(getattr(addon, name), *args, **kwargs)
 
 
 def show_listing(title_items, category=None, sort=None, content=None, cache=True):
     """Show a virtual directory in Kodi"""
-    from resources.lib.addon import routing
+    from addon import routing
 
     if content:
         # content is one of: files, songs, artists, albums, movies, tvshows, episodes, musicvideos, videos, images, games
@@ -191,9 +192,9 @@ def show_listing(title_items, category=None, sort=None, content=None, cache=True
     xbmcplugin.endOfDirectory(routing.handle, succeeded, cacheToDisc=cache)
 
 
-def play(stream, license_key=None, title=None, art_dict=None, info_dict=None, prop_dict=None):
+def play(stream, title=None, art_dict=None, info_dict=None, prop_dict=None):
     """Play the given stream"""
-    from resources.lib.addon import routing
+    from addon import routing
 
     play_item = xbmcgui.ListItem(label=title, path=stream)
     if art_dict:
@@ -209,7 +210,7 @@ def play(stream, license_key=None, title=None, art_dict=None, info_dict=None, pr
     else:
         play_item.setProperty('inputstreamaddon', 'inputstream.adaptive')
     play_item.setProperty('inputstream.adaptive.manifest_type', 'hls')
-    #play_item.setMimeType('application/dash+xml')
+    # play_item.setMimeType('application/dash+xml')
     play_item.setContentLookup(False)
 
     xbmcplugin.setResolvedUrl(routing.handle, True, listitem=play_item)
@@ -485,7 +486,7 @@ def container_update(url):
 
 def end_of_directory():
     """Close a virtual directory, required to avoid a waiting Kodi"""
-    from resources.lib.addon import routing
+    from addon import routing
     xbmcplugin.endOfDirectory(handle=routing.handle, succeeded=False, updateListing=False, cacheToDisc=False)
 
 
