@@ -26,5 +26,6 @@ v3.1.0
 v3.0.0
 - Harder, Better, Faster, Stronger
     </news>
+    <reuselanguageinvoker>true</reuselanguageinvoker>
   </extension>
 </addon>

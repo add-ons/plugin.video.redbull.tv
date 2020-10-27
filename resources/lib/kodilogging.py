@@ -3,13 +3,9 @@
 """Log handler for Kodi"""
 
 from __future__ import absolute_import, division, unicode_literals
-
 import logging
-
 import xbmc
-import xbmcaddon
-
-ADDON = xbmcaddon.Addon()
+from kodiutils import addon_id, get_setting
 
 
 class KodiLogHandler(logging.StreamHandler):
@@ -17,7 +13,7 @@ class KodiLogHandler(logging.StreamHandler):
 
     def __init__(self):
         logging.StreamHandler.__init__(self)
-        formatter = logging.Formatter("[{}] [%(name)s] %(message)s".format(ADDON.getAddonInfo("id")))
+        formatter = logging.Formatter("[{}] [%(name)s] %(message)s".format(addon_id()))
         self.setFormatter(formatter)
 
     def emit(self, record):
@@ -33,7 +29,7 @@ class KodiLogHandler(logging.StreamHandler):
 
         # Map DEBUG level to LOGNOTICE if debug logging setting has been activated
         # This is for troubleshooting only
-        if ADDON.getSetting('debug_logging') == 'true':
+        if get_setting('debug_logging') == 'true':
             levels[logging.DEBUG] = xbmc.LOGNOTICE
 
         try:

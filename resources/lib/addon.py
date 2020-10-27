@@ -5,7 +5,6 @@
 from __future__ import absolute_import, division, unicode_literals
 
 import logging
-import time
 from routing import Plugin
 
 import xbmc
@@ -19,8 +18,8 @@ from redbull import RedBullTV
 
 kodilogging.config()
 routing = Plugin()  # pylint: disable=invalid-name
-_LOGGER = logging.getLogger(__name__)
 
+_LOGGER = logging.getLogger('addon')
 COLLECTION = 1
 PRODUCT = 2
 
@@ -34,15 +33,15 @@ def show_main_menu():
     _LOGGER.warning('Building main menu')
 
     main_menu = [
-        dict(title="Live TV", url=routing.url_for(iptv_play)),
-        dict(title="Discover", url=routing.url_for(browse_product, "discover")),
-        dict(title="Browse", url=routing.url_for(browse_product, "channels")),
-        dict(title="Events", url=routing.url_for(browse_product, "events")),
-        dict(title="Search", url=routing.url_for(search))
+        dict(title=localize(30010), url=routing.url_for(iptv_play)),
+        dict(title=localize(30011), url=routing.url_for(browse_product, 'discover')),
+        dict(title=localize(30012), url=routing.url_for(browse_product, 'channels')),
+        dict(title=localize(30013), url=routing.url_for(browse_product, 'events')),
+        dict(title=localize(30014), url=routing.url_for(search))
     ]
 
     for item in main_menu:
-        list_item = xbmcgui.ListItem(item.get("title"))
+        list_item = xbmcgui.ListItem(item.get('title'))
         xbmcplugin.addDirectoryItem(routing.handle, url=item.get('url'), listitem=list_item, isFolder=(not 'play' in item.get('url')))
 
     xbmcplugin.endOfDirectory(routing.handle)
@@ -102,7 +101,7 @@ def build_menu(items_url):
         content = redbull.get_content(items_url)
     except IOError:
         # Error getting data from Redbull server
-        xbmcgui.Dialog().ok(localize(30020), localize(30021), localize(30022))
+        xbmcgui.Dialog().ok(localize(30220), localize(30221), localize(30222))
         return
 
     if content.get('links'):
@@ -111,8 +110,8 @@ def build_menu(items_url):
 
     if content.get('collections'):
         for collection in content.get('collections'):
-            if collection.get("collection_type") == "top_results":
-                content["items"] = collection.get('items')
+            if collection.get('collection_type') == 'top_results':
+                content['items'] = collection.get('items')
             else:
                 list_items.append(generate_list_item(collection, COLLECTION))
 
@@ -121,47 +120,47 @@ def build_menu(items_url):
             list_items.append(generate_list_item(item, PRODUCT))
 
     if not list_items:
-        xbmcgui.Dialog().ok(localize(30023), localize(30024), localize(30025))
+        xbmcgui.Dialog().ok(localize(30223), localize(30224), localize(30225))
         return
 
     for list_item in list_items:
         xbmcplugin.addDirectoryItem(handle=routing.handle, url=list_item.getPath(), listitem=list_item, isFolder=(not '/play/' in list_item.getPath()))
 
-    xbmc.executebuiltin('Container.SetViewMode(%d)' % 55) # Wide List
+    xbmc.executebuiltin('Container.SetViewMode({mode})'.format(mode=55)) # Wide List
     xbmcplugin.endOfDirectory(routing.handle)
 
 
 def generate_list_item(element, element_type):
-    list_item = xbmcgui.ListItem(element.get("title"))
-    info_labels = dict(title=element.get("title"))
+    list_item = xbmcgui.ListItem(element.get('title'))
+    info_labels = dict(title=element.get('title'))
 
-    if element.get("playable") or element.get("action") == "play":
-        list_item.setPath(routing.url_for(play_uid, uid=element["id"]))
-        if element.get("duration"):
-            info_labels["duration"] = element.get("duration") / 1000
-    elif element.get('type') == "video" and element.get("status").get("label") == "Upcoming":
-        info_labels['premiered'] = element.get("status").get("start_time")
-        list_item.setPath("/notify/" + localize(30026), localize(30027), element.get('event_date') + ' (GMT+' + str(time.timezone / 3600 * -1))
+    if element.get('playable') or element.get('action') == 'play':
+        list_item.setPath(routing.url_for(play_uid, uid=element['id']))
+        if element.get('duration'):
+            info_labels['duration'] = element.get('duration') / 1000
+    elif element.get('type') == 'video' and element.get('status').get('label') == 'Upcoming':
+        info_labels['premiered'] = element.get('status').get('start_time')
+        list_item.setPath('/notify/' + localize(30026), localize(30027), element.get('event_date') + ' (GMT+' + str(time.timezone / 3600 * -1))
     elif element_type == COLLECTION:
-        list_item.setPath(routing.url_for(browse_collection, uid=element["id"]))
+        list_item.setPath(routing.url_for(browse_collection, uid=element['id']))
     elif element_type == PRODUCT:
-        list_item.setPath(routing.url_for(browse_product, uid=element["id"]))
+        list_item.setPath(routing.url_for(browse_product, uid=element['id']))
 
-    info_labels["title"] = element.get("label") or element.get("title")
-    info_labels["genre"] = element.get("subheading")
-    info_labels["plot"] = element.get("long_description") if element.get("long_description") else element.get("short_description")
+    info_labels['title'] = element.get('label') or element.get('title')
+    info_labels['genre'] = element.get('subheading')
+    info_labels['plot'] = element.get('long_description') if element.get('long_description') else element.get('short_description')
 
-    if element.get("resources"):
-        list_item.setArt({"fanart": redbull.get_image_url(element.get("id"), element.get("resources"), "landscape")})
-        list_item.setArt({"landscape": redbull.get_image_url(element.get("id"), element.get("resources"), "landscape")})
-        list_item.setArt({"banner": redbull.get_image_url(element.get("id"), element.get("resources"), "banner")})
-        list_item.setArt({"poster": redbull.get_image_url(element.get("id"), element.get("resources"), "poster")})
-        list_item.setArt({"thumb": redbull.get_image_url(element.get("id"), element.get("resources"), "thumb")})
+    if element.get('resources'):
+        list_item.setArt(dict(fanart=redbull.get_image_url(element.get('id'), element.get('resources'), 'landscape')))
+        list_item.setArt(dict(landscape=redbull.get_image_url(element.get('id'), element.get('resources'), 'landscape')))
+        list_item.setArt(dict(banner=redbull.get_image_url(element.get('id'), element.get('resources'), 'banner')))
+        list_item.setArt(dict(poster=redbull.get_image_url(element.get('id'), element.get('resources'), 'poster')))
+        list_item.setArt(dict(thumb=redbull.get_image_url(element.get('id'), element.get('resources'), 'thumb')))
 
     if list_item.getArt('thumb') is None:
-        list_item.setArt({"thumb": addon_icon()})
+        list_item.setArt(dict(thumb=addon_icon()))
 
-    list_item.setInfo(type="Video", infoLabels=info_labels)
+    list_item.setInfo(type='Video', infoLabels=info_labels)
 
     return list_item
 
