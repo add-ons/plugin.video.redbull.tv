@@ -83,8 +83,7 @@ class RedBullTV:
         return get_json(REDBULL_API + "epg?complete=true", self.token)
 
     def play_live(self):
-        item = xbmcgui.ListItem(path=REDBULL_STREAMS + "linear-borb/" + self.token + "/playlist.m3u8")
-        xbmcplugin.setResolvedUrl(handle=self.addon_handle, succeeded=True, listitem=item)
+        play_stream(REDBULL_STREAMS + "linear-borb/" + self.token + "/playlist.m3u8")
 
     def navigation(self):
         url = self.args.get("api_url")[0].decode('base64') if self.args.get("api_url") else None
@@ -151,8 +150,8 @@ class RedBullTV:
             xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=nav_url, listitem=list_item, isFolder=(not item["is_content"]))
 
     @staticmethod
-    def play_stream(streams_url):
-        play(streams_url)
+    def play_stream(master_m3u8_url):
+        play(master_m3u8_url)
 
     @staticmethod
     def get_image_url(element_id, resources, element_type, width=1024, quality=70):
