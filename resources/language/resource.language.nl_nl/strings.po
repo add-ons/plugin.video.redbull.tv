@@ -6,123 +6,123 @@ msgstr ""
 "POT-Creation-Date: 2018-01-12 21:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: English\n"
+"Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en\n"
+"Language: nl\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 
 ### MAIN MENU
 msgctxt "#30010"
 msgid "Live TV"
-msgstr ""
+msgstr "Live tv"
 
 msgctxt "#30011"
 msgid "Discover"
-msgstr ""
+msgstr "Ontdek"
 
 msgctxt "#30012"
 msgid "Channels"
-msgstr ""
+msgstr "Kanalen"
 
 msgctxt "#30013"
 msgid "Events"
-msgstr ""
+msgstr "Evenementen"
 
 msgctxt "#30014"
 msgid "Search"
-msgstr ""
+msgstr "Doorzoek"
 
 
 msgctxt "#30200"
 msgid "General"
-msgstr ""
+msgstr "Algemeen"
 
 msgctxt "#30210"
 msgid "Video Quality"
-msgstr ""
+msgstr "Video kwaliteit"
 
 msgctxt "#30211"
 msgid "180p"
-msgstr ""
+msgstr "180p"
 
 msgctxt "#30212"
 msgid "240p"
-msgstr ""
+msgstr "240p"
 
 msgctxt "#30213"
 msgid "360p"
-msgstr ""
+msgstr "360p"
 
 msgctxt "#30214"
 msgid "540p"
-msgstr ""
+msgstr "540p"
 
 msgctxt "#30215"
 msgid "720p (HD)"
-msgstr ""
+msgstr "720p (HD)"
 
 msgctxt "#30216"
 msgid "1080p (HD)"
-msgstr ""
+msgstr "1080p (HD)"
 
 msgctxt "#30220"
 msgid "Error"
-msgstr ""
+msgstr "Fout"
 
 msgctxt "#30221"
 msgid "Error getting data from Redbull server."
-msgstr ""
+msgstr "Fout bij het ophalen van data van de Redbull server"
 
 msgctxt "#30222"
 msgid "Try again shortly"
-msgstr ""
+msgstr "Probeer later opnieuw"
 
 msgctxt "#30223"
 msgid "No Results"
-msgstr ""
+msgstr "Geen resultaat"
 
 msgctxt "#30224"
 msgid "No results found"
-msgstr ""
+msgstr "Geen resultaat gevonden"
 
 msgctxt "#30225"
 msgid "Please try another menu or search string"
-msgstr ""
+msgstr "Probeer een ander menu of zoekopdracht"
 
 msgctxt "#30226"
 msgid "Upcoming Event"
-msgstr ""
+msgstr "Volgend evenement"
 
 msgctxt "#30227"
 msgid "This event is scheduled to start on:"
-msgstr ""
+msgstr "Dit evenement is gepland om te starten op:"
 
 ### SETTINGS
 msgctxt "#30860"
 msgid "Integration"
-msgstr ""
+msgstr "Integratie"
 
 msgctxt "#30861"
 msgid "Integration with other Kodi add-ons"
-msgstr ""
+msgstr "Integratie met andere Kodi add-ons"
 
 msgctxt "#30875"
 msgid "Install IPTV Manager add-on…"
-msgstr ""
+msgstr "Installeer de IPTV Manager add-on…"
 
 msgctxt "#30877"
 msgid "Enable IPTV Manager integration (experimental)"
-msgstr ""
+msgstr "Activeer IPTV Manager integratie (experimenteel)"
 
 msgctxt "#30879"
 msgid "IPTV Manager settings…"
-msgstr ""
+msgstr "IPTV Manager instellingen…"
 
 
 ### MESSAGES
 msgctxt "#30966"
 msgid "Using a SOCKS proxy requires the PySocks library (script.module.pysocks) installed."
-msgstr ""
+msgstr "Het gebruik van SOCKS proxies vereist dat de PySocks library (script.module.pysocks) geïnstalleerd is."

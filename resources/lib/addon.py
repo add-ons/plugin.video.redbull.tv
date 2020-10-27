@@ -4,11 +4,7 @@
 
 from __future__ import absolute_import, division, unicode_literals
 
-import json
 import logging
-import time
-import urllib
-import urllib2
 from routing import Plugin
 
 import xbmc
@@ -21,8 +17,8 @@ from kodiutils import addon_icon, addon_id, get_search_string, localize, play
 kodilogging.config()
 routing = Plugin()  # pylint: disable=invalid-name
 _LOGGER = logging.getLogger('addon')
-REDBULL_STREAMS = "https://dms.redbull.tv/v3/"
-REDBULL_API = "https://api.redbull.tv/v3/"
+REDBULL_STREAMS = 'https://dms.redbull.tv/v3/'
+REDBULL_API = 'https://api.redbull.tv/v3/'
 COLLECTION = 1
 PRODUCT = 2
 
@@ -58,15 +54,23 @@ def run(params):
 
 
 def get_json(url, token=None):
+    try:  # Python 3
+        from urllib.error import URLError
+        from urllib.request import Request, urlopen
+    except ImportError:  # Python 2
+        from urllib2 import Request, URLError, urlopen
+
+    request = Request(url)
+    if token:
+        request.add_header('Authorization', token)
     try:
-        request = urllib2.Request(url)
-        if token:
-            request.add_header("Authorization", token)
-        response = urllib2.urlopen(request)
-    except urllib2.URLError as err:
-        raise IOError(*err.reason)
-    else:
-        return json.loads(response.read())
+        response = urlopen(request)
+    except URLError as exc:
+        raise IOError(*exc.reason)
+
+    from json import loads
+    xbmc.log('Access: {url}'.format(url=url), xbmc.LOGNOTICE)
+    return loads(response.read())
 
 
 class RedBullTV:
@@ -103,53 +107,53 @@ class RedBullTV:
             items = self.get_items(url)
         except IOError:
             # Error getting data from Redbull server
-            xbmcgui.Dialog().ok(localize(30020), localize(30021), localize(30022))
+            xbmcgui.Dialog().ok(localize(30220), localize(30221), localize(30222))
             return
 
         if not items:
             # No results found
-            xbmcgui.Dialog().ok(localize(30023), localize(30024), localize(30025))
+            xbmcgui.Dialog().ok(localize(30223), localize(30224), localize(30225))
             return
 
         if items[0].get("event_date"):
             # Scheduled Event Time
-            xbmcgui.Dialog().ok(localize(30026), localize(30027), items[0].get('event_date') + ' (GMT+' + str(time.timezone / 3600 * -1) + ')')
+            from time import timezone
+            xbmcgui.Dialog().ok(localize(30226), localize(30227), items[0].get('event_date') + ' (GMT+' + str(timezone / 3600 * -1) + ')')
             return
 
         self.add_items(items)
 
-        xbmc.executebuiltin('Container.SetViewMode(%d)' % self.default_view_mode)
+        xbmc.executebuiltin('Container.SetViewMode({mode})'.format(mode=self.default_view_mode))
         xbmcplugin.endOfDirectory(self.addon_handle)
 
     def add_items(self, items):
+        from urllib import urlencode
         for item in items:
-            params = dict(
-                api_url=item["url"].encode('base64'),
-            )
+            params = dict(api_url=item.get('url').encode('base64'))
 
             list_item = xbmcgui.ListItem(item.get("title"))
-            list_item.setArt({"thumb": item['landscape'] if 'landscape' in item else addon_icon()})
+            list_item.setArt(dict(thumb=item.get('landscape', addon_icon())))
 
-            if item.get("is_content"):
-                params['is_stream'] = item["is_content"]
+            if item.get('is_content'):
+                params['is_stream'] = item['is_content']
                 list_item.setProperty('IsPlayable', 'true')
             if 'fanart' in item:
-                list_item.setArt({"fanart": item['fanart']})
+                list_item.setArt(dict(fanart=item.get('fanart')))
             if 'landscape' in item:
-                list_item.setArt({"landscape": item['landscape']})
+                list_item.setArt(dict(landscape=item.get('landscape')))
             if 'banner' in item:
-                list_item.setArt({"banner": item['banner']})
+                list_item.setArt(dict(banner=item.get('banner')))
             if 'poster' in item:
-                list_item.setArt({"poster": item['poster']})
+                list_item.setArt(dict(poster=item.get('poster')))
 
-            info_labels = {
-                "title": item["title"],
-                "plot": item.get("summary", None),
-                "genre": item.get("subheading", None),
-                "duration": item.get("duration")
-            }
-            list_item.setInfo(type="Video", infoLabels=info_labels)
-            nav_url = self.base_url + '?' + urllib.urlencode(params)
+            info_labels = dict(
+                title=item.get('title'),
+                plot=item.get('summary'),
+                genre=item.get('subheading'),
+                duration=item.get('duration'),
+            )
+            list_item.setInfo(type='Video', infoLabels=info_labels)
+            nav_url = self.base_url + '?' + urlencode(params)
             xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=nav_url, listitem=list_item, isFolder=(not item["is_content"]))
 
     @staticmethod
@@ -158,63 +162,54 @@ class RedBullTV:
 
     @staticmethod
     def get_image_url(element_id, resources, element_type, width=1024, quality=70):
-        url = "https://resources.redbull.tv/" + element_id + "/"
 
-        if element_type == "fanart" and "rbtv_background_landscape" in resources:
-            url += "rbtv_background_landscape"
-        if element_type == "landscape":
-            if "rbtv_cover_art_landscape" in resources:
-                url += "rbtv_cover_art_landscape"
-            elif "rbtv_display_art_landscape" in resources:
-                url += "rbtv_display_art_landscape"
+        if element_type == 'fanart':
+            if 'rbtv_background_landscape' in resources:
+                image_type = 'rbtv_background_landscape'
+            else:
+                return None
+        elif element_type == 'landscape':
+            if 'rbtv_cover_art_landscape' in resources:
+                image_type = 'rbtv_cover_art_landscape'
+            elif 'rbtv_display_art_landscape' in resources:
+                image_type = 'rbtv_display_art_landscape'
             elif "rbtv_background_landscape" in resources:
-                url += "rbtv_background_landscape"
+                image_type = 'rbtv_background_landscape'
             else:
                 return None
-        elif element_type == "banner":
-            if "rbtv_cover_art_banner" in resources:
-                url += "rbtv_cover_art_banner"
-            elif "rbtv_display_art_banner" in resources:
-                url += "rbtv_display_art_banner"
+        elif element_type == 'banner':
+            if 'rbtv_cover_art_banner' in resources:
+                image_type = 'rbtv_cover_art_banner'
+            elif 'rbtv_display_art_banner' in resources:
+                image_type = 'rbtv_display_art_banner'
             else:
                 return None
-        elif element_type == "poster":
-            if "rbtv_cover_art_portrait" in resources:
-                url += "rbtv_cover_art_portrait"
-            elif "rbtv_display_art_portrait" in resources:
-                url += "rbtv_display_art_portrait"
+        elif element_type == 'poster':
+            if 'rbtv_cover_art_portrait' in resources:
+                image_type = 'rbtv_cover_art_portrait'
+            elif 'rbtv_display_art_portrait' in resources:
+                image_type = 'rbtv_display_art_portrait'
             else:
                 return None
         else:
             return None
 
-        url += "/im"
-
-        if width:
-            url += ":i:w_1024"
-
-        if quality:
-            url += ",q_70"
-
-        return url
+        return 'https://resources.redbull.tv/{id}/{type}/im:i:w_{width},q_{quality}'.format(id=element_id, type=image_type, width=width, quality=quality)
 
     def get_element_details(self, element, element_type):
         details = {"is_content": False}
         if element.get("playable") or element.get("action") == "play":
             details["is_content"] = True
-            details["url"] = REDBULL_STREAMS + \
-                element["id"] + "/" + self.token + "/playlist.m3u8"
+            details["url"] = REDBULL_STREAMS + element["id"] + "/" + self.token + "/playlist.m3u8"
             if element.get("duration"):
                 details["duration"] = element.get("duration") / 1000
         # Handle video types that are actually upcoming events
         elif 'type' in element and element.get('type') == "video" and 'status' in element and element.get("status").get("label") == "Upcoming":
             details["event_date"] = element.get("status").get("start_time")
         elif element_type == COLLECTION:
-            details["url"] = REDBULL_API + \
-                "collections/" + element["id"]  # + "?limit=20"
+            details["url"] = REDBULL_API + "collections/" + element["id"]  # + "?limit=20"
         elif element_type == PRODUCT:
-            details["url"] = REDBULL_API + \
-                "products/" + element["id"]  # +"?limit=20"
+            details["url"] = REDBULL_API + "products/" + element["id"]  # +"?limit=20"
 
         details["title"] = (element.get("label") or element.get("title"))
         details["subheading"] = element.get("subheading")
@@ -231,41 +226,37 @@ class RedBullTV:
 
     def get_items(self, url=None, page=1, limit=20):
 
-        items = []
-
         # If no url is specified, return the root menu
         if url is None:
             return [
-                {"title": "Live TV", "url": REDBULL_STREAMS + "linear-borb/" + self.token + "/playlist.m3u8", "is_content": True},
-                {"title": "Discover", "url": REDBULL_API + "products/discover", "is_content": False},
-                {"title": "Browse", "url": REDBULL_API + "products/channels", "is_content": False},
-                {"title": "Events", "url": REDBULL_API + "products/events", "is_content": False},
-                {"title": "Search", "url": REDBULL_API + "search?q=", "is_content": False},
+                dict(title=localize(30010), url=REDBULL_STREAMS + 'linear-borb/' + self.token + '/playlist.m3u8', is_content=True),
+                dict(title=localize(30011), url=REDBULL_API + 'products/discover', is_content=False),
+                dict(title=localize(30012), url=REDBULL_API + 'products/channels', is_content=False),
+                dict(title=localize(30013), url=REDBULL_API + 'products/events', is_content=False),
+                dict(title=localize(30014), url=REDBULL_API + 'search?q=', is_content=False),
             ]
 
         result = get_json(url + ('?', '&')['?' in url] + 'limit=' + str(limit) + '&offset=' + str((page - 1) * limit), self.token)
 
+        items = []
         if 'links' in result:
-            links = result["links"]
+            links = result.get('links')
             for link in links:
-                items.append(self.get_element_details(
-                    link, PRODUCT))
+                items.append(self.get_element_details(link, PRODUCT))
 
         if 'collections' in result:
-            collections = result["collections"]
+            collections = result.get('collections')
 
             # Handle Search results
-            if collections and collections[0].get("collection_type") == "top_results":
-                result["items"] = collections[0]["items"]
+            if collections and collections[0].get('collection_type') == 'top_results':
+                result['items'] = collections[0].get('items')
             else:
                 for collection in collections:
-                    items.append(self.get_element_details(
-                        collection, COLLECTION))
+                    items.append(self.get_element_details(collection, COLLECTION))
 
         if 'items' in result:
-            result_items = result["items"]
+            result_items = result.get('items')
             for result_item in result_items:
-                items.append(self.get_element_details(
-                    result_item, PRODUCT))
+                items.append(self.get_element_details(result_item, PRODUCT))
 
         return items
