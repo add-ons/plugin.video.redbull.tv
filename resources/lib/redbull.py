@@ -3,10 +3,12 @@
 """ Implementation of RedBullTV class """
 
 from __future__ import absolute_import, division, unicode_literals
-import kodiutils
-import kodilogging
+
 import urllib2
 import json
+
+import kodiutils
+import kodilogging
 from kodiutils import addon_icon, addon_id, localize
 
 
@@ -18,7 +20,7 @@ class RedBullTV():
 
 
     def __init__(self):
-        self.token = self.get_json(self.REDBULL_API + "session?category=smart_tv&os_family=android")["token"]
+        self.token = self.get_json(self.REDBULL_API + "session?category=smart_tv&os_family=android", use_token=False)["token"]
 
 
     def get_play_url(self, uid):
@@ -37,20 +39,20 @@ class RedBullTV():
         return self.REDBULL_API + "search?q=" + query
 
 
-    def get_json(self, url, token=None):
+    def get_json(self, url, use_token=False):
         try:
             request = urllib2.Request(url)
-            if token:
-                request.add_header("Authorization", token)
+            if use_token:
+                request.add_header("Authorization", self.token)
             response = urllib2.urlopen(request)
         except urllib2.URLError as err:
             raise IOError(*err.reason)
         else:
-            return json.loads(response.read())          
+            return json.loads(response.read())
 
 
     def get_epg(self):
-        return self.get_json(self.REDBULL_API + "epg?complete=true", self.token)
+        return self.get_json(self.REDBULL_API + "epg?complete=true", use_token=True)
 
 
     def get_image_url(self, element_id, resources, element_type, width=1024, quality=70):
@@ -96,4 +98,4 @@ class RedBullTV():
 
 
     def get_content(self, url=None, page=1, limit=20):
-        return self.get_json(url + ('?', '&')['?' in url] + 'limit=' + str(limit) + '&offset=' + str((page - 1) * limit), self.token)
+        return self.get_json(url + ('?', '&')['?' in url] + 'limit=' + str(limit) + '&offset=' + str((page - 1) * limit), use_token=True)

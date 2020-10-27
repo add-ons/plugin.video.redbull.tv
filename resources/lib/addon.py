@@ -4,11 +4,8 @@
 
 from __future__ import absolute_import, division, unicode_literals
 
-import json
 import logging
 import time
-import urllib
-import urllib2
 from routing import Plugin
 
 import xbmc
@@ -18,6 +15,8 @@ import xbmcplugin
 import kodilogging
 from kodiutils import addon_icon, addon_id, get_search_string, localize, play
 
+from redbull import RedBullTV
+
 kodilogging.config()
 routing = Plugin()  # pylint: disable=invalid-name
 _LOGGER = logging.getLogger(__name__)
@@ -25,9 +24,7 @@ _LOGGER = logging.getLogger(__name__)
 COLLECTION = 1
 PRODUCT = 2
 
-from redbull import RedBullTV
 redbull = RedBullTV()
-
 
 @routing.route('/')
 def show_main_menu():
@@ -36,19 +33,18 @@ def show_main_menu():
     _LOGGER.info('Building main menu')
     _LOGGER.warning('Building main menu')
 
-    main_menu =  [
-        dict(title = "Live TV", url = routing.url_for(iptv_play)),
-        dict(title = "Discover", url = routing.url_for(browse_product, "discover")),
-        dict(title = "Browse", url = routing.url_for(browse_product , "channels")),
-        dict(title = "Events", url = routing.url_for(browse_product, "events")),
-        dict(title = "Search", url = routing.url_for(search))
+    main_menu = [
+        dict(title="Live TV", url=routing.url_for(iptv_play)),
+        dict(title="Discover", url=routing.url_for(browse_product, "discover")),
+        dict(title="Browse", url=routing.url_for(browse_product, "channels")),
+        dict(title="Events", url=routing.url_for(browse_product, "events")),
+        dict(title="Search", url=routing.url_for(search))
     ]
 
     for item in main_menu:
         list_item = xbmcgui.ListItem(item.get("title"))
         xbmcplugin.addDirectoryItem(routing.handle, url=item.get('url'), listitem=list_item, isFolder=(not 'play' in item.get('url')))
 
-    xbmc.executebuiltin('Container.SetViewMode(%d)' % 55) # Wide List
     xbmcplugin.endOfDirectory(routing.handle)
 
 
@@ -82,7 +78,7 @@ def browse_collection(uid):
 
 
 @routing.route('/product/<uid>')
-def browse_product(uid):      
+def browse_product(uid):
     build_menu(redbull.get_product_url(uid))
 
 
@@ -137,24 +133,24 @@ def build_menu(items_url):
 
 def generate_list_item(element, element_type):
     list_item = xbmcgui.ListItem(element.get("title"))
-    info_labels = dict(title = element.get("title"))
+    info_labels = dict(title=element.get("title"))
 
     if element.get("playable") or element.get("action") == "play":
-        list_item.setPath(routing.url_for(play_uid, uid = element["id"]))
+        list_item.setPath(routing.url_for(play_uid, uid=element["id"]))
         if element.get("duration"):
             info_labels["duration"] = element.get("duration") / 1000
     elif element.get('type') == "video" and element.get("status").get("label") == "Upcoming":
-        info_labels['premiered'] = element.get("status").get("start_time")   
+        info_labels['premiered'] = element.get("status").get("start_time")
         list_item.setPath("/notify/" + localize(30026), localize(30027), element.get('event_date') + ' (GMT+' + str(time.timezone / 3600 * -1))
     elif element_type == COLLECTION:
-        list_item.setPath(routing.url_for(browse_collection, uid = element["id"]))
+        list_item.setPath(routing.url_for(browse_collection, uid=element["id"]))
     elif element_type == PRODUCT:
-        list_item.setPath(routing.url_for(browse_product, uid = element["id"]))
+        list_item.setPath(routing.url_for(browse_product, uid=element["id"]))
 
     info_labels["title"] = element.get("label") or element.get("title")
     info_labels["genre"] = element.get("subheading")
     info_labels["plot"] = element.get("long_description") if element.get("long_description") else element.get("short_description")
-    
+
     if element.get("resources"):
         list_item.setArt({"fanart": redbull.get_image_url(element.get("id"), element.get("resources"), "landscape")})
         list_item.setArt({"landscape": redbull.get_image_url(element.get("id"), element.get("resources"), "landscape")})
