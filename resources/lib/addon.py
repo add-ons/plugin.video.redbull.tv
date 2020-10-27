@@ -140,7 +140,8 @@ def generate_list_item(element, element_type):
             info_labels['duration'] = element.get('duration') / 1000
     elif element.get('type') == 'video' and element.get('status').get('label') == 'Upcoming':
         info_labels['premiered'] = element.get('status').get('start_time')
-        list_item.setPath('/notify/' + localize(30026), localize(30027), element.get('event_date') + ' (GMT+' + str(time.timezone / 3600 * -1))
+        from time import timezone
+        list_item.setPath('/notify/' + localize(30026), localize(30027), element.get('event_date') + ' (GMT+' + str(timezone / 3600 * -1))
     elif element_type == COLLECTION:
         list_item.setPath(routing.url_for(browse_collection, uid=element['id']))
     elif element_type == PRODUCT:

@@ -4,9 +4,7 @@
 
 from __future__ import absolute_import, division, unicode_literals
 
-import urllib2
-import json
-
+import xbmc
 import kodiutils
 import kodilogging
 from kodiutils import addon_icon, addon_id, localize
