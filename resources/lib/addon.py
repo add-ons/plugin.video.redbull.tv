@@ -83,7 +83,7 @@ class RedBullTV:
         return get_json(REDBULL_API + "epg?complete=true", self.token)
 
     def play_live(self):
-        play_stream(REDBULL_STREAMS + "linear-borb/" + self.token + "/playlist.m3u8")
+        self.play_stream(REDBULL_STREAMS + "linear-borb/" + self.token + "/playlist.m3u8")
 
     def navigation(self):
         url = self.args.get("api_url")[0].decode('base64') if self.args.get("api_url") else None
