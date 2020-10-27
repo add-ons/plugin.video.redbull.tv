@@ -94,7 +94,10 @@ class RedBullTV:
             return
 
         if url and "search?q=" in url:
-            url += get_search_string()
+            query = get_search_string()
+            if not query:
+                return
+            url += query
 
         try:
             items = self.get_items(url)
