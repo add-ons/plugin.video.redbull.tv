@@ -53,7 +53,7 @@ class RedBullTV():
             raise IOError(*err.reason)
         
         from json import loads
-        xbmc.log('Access: {url}'.format(url=url), xbmc.LOGNOTICE)
+        xbmc.log('Access: {url}'.format(url=url), xbmc.LOGINFO)
         return loads(response.read())
 
 
