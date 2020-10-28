@@ -40,33 +40,6 @@ msgctxt "#30200"
 msgid "General"
 msgstr ""
 
-msgctxt "#30210"
-msgid "Video Quality"
-msgstr ""
-
-msgctxt "#30211"
-msgid "180p"
-msgstr ""
-
-msgctxt "#30212"
-msgid "240p"
-msgstr ""
-
-msgctxt "#30213"
-msgid "360p"
-msgstr ""
-
-msgctxt "#30214"
-msgid "540p"
-msgstr ""
-
-msgctxt "#30215"
-msgid "720p (HD)"
-msgstr ""
-
-msgctxt "#30216"
-msgid "1080p (HD)"
-msgstr ""
 
 msgctxt "#30220"
 msgid "Error"
