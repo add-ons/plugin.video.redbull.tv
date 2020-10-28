@@ -48,7 +48,7 @@ class IPTVManager:
     @via_socket
     def send_epg(self):  # pylint: disable=no-method-argument,no-self-use
         """ Return JSON-EPG formatted information to IPTV Manager. """
-        from addon import RedBullTV
+        from redbull import RedBullTV
         from collections import defaultdict
         from datetime import datetime
         epg = defaultdict(list)

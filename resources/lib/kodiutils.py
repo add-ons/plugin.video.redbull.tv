@@ -203,7 +203,7 @@ def play(stream, title=None, art_dict=None, info_dict=None, prop_dict=None):
         play_item.setInfo(type='video', infoLabels=info_dict)
     if prop_dict:
         play_item.setProperties(prop_dict)
-
+    
     # Setup Inputstream Adaptive
     if kodi_version_major() >= 19:
         play_item.setProperty('inputstream', 'inputstream.adaptive')
@@ -526,3 +526,6 @@ def delete(path):
     """Remove a file (using xbmcvfs)"""
     from xbmcvfs import delete as vfsdelete
     return vfsdelete(path)
+
+def addon_available(addon_name):
+    return xbmc.getCondVisibility('System.HasAddon(%s)' % addon_name) == 1

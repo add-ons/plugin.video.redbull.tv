@@ -17,7 +17,7 @@ msgstr ""
 ### MAIN MENU
 msgctxt "#30010"
 msgid "Live TV"
-msgstr "Live tv"
+msgstr "Live TV"
 
 msgctxt "#30011"
 msgid "Discover"
@@ -33,40 +33,12 @@ msgstr "Evenementen"
 
 msgctxt "#30014"
 msgid "Search"
-msgstr "Doorzoek"
+msgstr "Zoeken"
 
 
 msgctxt "#30200"
 msgid "General"
 msgstr "Algemeen"
-
-msgctxt "#30210"
-msgid "Video Quality"
-msgstr "Video kwaliteit"
-
-msgctxt "#30211"
-msgid "180p"
-msgstr "180p"
-
-msgctxt "#30212"
-msgid "240p"
-msgstr "240p"
-
-msgctxt "#30213"
-msgid "360p"
-msgstr "360p"
-
-msgctxt "#30214"
-msgid "540p"
-msgstr "540p"
-
-msgctxt "#30215"
-msgid "720p (HD)"
-msgstr "720p (HD)"
-
-msgctxt "#30216"
-msgid "1080p (HD)"
-msgstr "1080p (HD)"
 
 msgctxt "#30220"
 msgid "Error"
