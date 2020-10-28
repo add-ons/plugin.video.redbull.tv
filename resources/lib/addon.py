@@ -33,7 +33,7 @@ def index():
     list_item.setInfo(type='video', infoLabels={})
     addDirectoryItem(plugin.handle, plugin.url_for(iptv_play), list_item, False)
     addDirectoryItem(plugin.handle, plugin.url_for(browse_product, 'discover'), ListItem(localize(30011)), True)
-    addDirectoryItem(plugin.handle, plugin.url_for(browse_product, 'channels'), ListItem(localize(30012)), True)
+    addDirectoryItem(plugin.handle, plugin.url_for(browse_collection, 'playlists::d554f1ca-5a8a-4d5c-a562-419185d57979'), ListItem(localize(30012)), True)
     addDirectoryItem(plugin.handle, plugin.url_for(browse_product, 'events'), ListItem(localize(30013)), True)
     addDirectoryItem(plugin.handle, plugin.url_for(search), ListItem(localize(30014)), True)
     endOfDirectory(plugin.handle)
