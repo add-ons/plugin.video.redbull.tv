@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import, division, unicode_literals
 import kodiutils
-
+from xbmc import log
 
 class IPTVManager:
     """ Interface to IPTV Manager """
@@ -51,22 +51,22 @@ class IPTVManager:
         from redbull import RedBullTV
         from collections import defaultdict
         from datetime import datetime
+        from kodiutils import url_for
+
         epg = defaultdict(list)
 
         redbull = RedBullTV()
 
-        for item in redbull.get_epg()['items']:
+        for item in redbull.get_epg().get('items'):
             epg['redbulltv'].append(dict(
-                start=datetime.strptime(item['start_time'], "%Y-%m-%dT%H:%M:%S.%fZ").isoformat(),
-                stop=datetime.strptime(item['end_time'], "%Y-%m-%dT%H:%M:%S.%fZ").isoformat(),
-                title=item['title'],
-                description=item['long_description'],
-                subtitle=item['subheading'],
-                episode=None,
-                genre="Sport",
-                image=redbull.get_image_url(item['id'], item['resources'], 'landscape'),
-                date=None,
-                stream=None
+                start=datetime.strptime(item.get('start_time'), "%Y-%m-%dT%H:%M:%S.%fZ").isoformat(),
+                stop=datetime.strptime(item.get('end_time'), "%Y-%m-%dT%H:%M:%S.%fZ").isoformat(),
+                title=item.get('title'),
+                description=item.get('long_description'),
+                subtitle=item.get('subheading'),
+                genre='Sport',
+                image=redbull.get_image_url(item.get('id'), item.get('resources'), 'landscape'),
+                stream=url_for('play_uid', uid=item.get('id'))
             ))
 
         return dict(version=1, epg=epg)
