@@ -45,14 +45,14 @@ def iptv_play():
 def iptv_channels():
     """ Generate channel data for the Kodi PVR integration """
     from iptvmanager import IPTVManager
-    IPTVManager(int(routing.args['port'][0])).send_channels()  # pylint: disable=too-many-function-args
+    IPTVManager(int(plugin.args['port'][0])).send_channels()  # pylint: disable=too-many-function-args
 
 
 @plugin.route('/iptv/epg')
 def iptv_epg():
     """ Generate EPG data for the Kodi PVR integration """
     from iptvmanager import IPTVManager
-    IPTVManager(int(routing.args['port'][0])).send_epg()  # pylint: disable=too-many-function-args
+    IPTVManager(int(plugin.args['port'][0])).send_epg()  # pylint: disable=too-many-function-args
 
 
 @plugin.route('/play/<uid>')
