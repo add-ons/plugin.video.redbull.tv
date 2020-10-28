@@ -194,7 +194,7 @@ def show_listing(title_items, category=None, sort=None, content=None, cache=True
 
 def play(stream, title=None, art_dict=None, info_dict=None, prop_dict=None):
     """Play the given stream"""
-    from addon import plugin
+    from addon import routing
 
     play_item = xbmcgui.ListItem(label=title, path=stream)
     if art_dict:
@@ -213,7 +213,7 @@ def play(stream, title=None, art_dict=None, info_dict=None, prop_dict=None):
     # play_item.setMimeType('application/dash+xml')
     play_item.setContentLookup(False)
 
-    xbmcplugin.setResolvedUrl(plugin.handle, True, listitem=play_item)
+    xbmcplugin.setResolvedUrl(routing.handle, True, listitem=play_item)
 
 
 def get_search_string(heading='', message=''):

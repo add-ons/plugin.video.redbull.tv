@@ -12,73 +12,117 @@ from xbmcgui import ListItem, Dialog
 from xbmcplugin import addDirectoryItem, endOfDirectory, setContent
 
 import kodilogging
-from kodiutils import addon_icon, addon_id, get_search_string, localize, play
+from kodiutils import addon_icon, addon_id, get_search_string, localize, play, TitleItem, get_addon_info, show_listing
 
 from redbull import RedBullTV
 
 kodilogging.config()
-plugin = routing.Plugin()  # pylint: disable=invalid-name
+routing = routing.Plugin()  # pylint: disable=invalid-name
 redbull = RedBullTV()
 
 _LOGGER = logging.getLogger('addon')
 COLLECTION = 1
 PRODUCT = 2
 
-@plugin.route('/')
+@routing.route('/')
 def index():
     """ Show the main menu """
     log('Building main menu')
-    list_item = ListItem(localize(30010))
-    list_item.setProperty('IsPlayable','true')
-    list_item.setInfo(type='video', infoLabels={})
-    addDirectoryItem(plugin.handle, plugin.url_for(iptv_play), list_item, False)
-    addDirectoryItem(plugin.handle, plugin.url_for(browse_product, 'discover'), ListItem(localize(30011)), True)
-    addDirectoryItem(plugin.handle, plugin.url_for(browse_collection, 'playlists::d554f1ca-5a8a-4d5c-a562-419185d57979'), ListItem(localize(30012)), True)
-    addDirectoryItem(plugin.handle, plugin.url_for(browse_product, 'events'), ListItem(localize(30013)), True)
-    addDirectoryItem(plugin.handle, plugin.url_for(search), ListItem(localize(30014)), True)
-    endOfDirectory(plugin.handle)
+    listing = [
+        TitleItem(
+            title=localize(30010),  # A-Z
+            path=routing.url_for(iptv_play),
+            art_dict=dict(
+                icon='DefaultMovieTitle.png',
+                fanart=get_addon_info('fanart'),
+                poster=addon_icon()
+            ),
+            info_dict=dict(
+                plot='Best of Red Bull TV',
+            ),
+            is_playable=True
+        ),
+        TitleItem(
+            title=localize(30011),  # A-Z
+            path=routing.url_for(browse_product, 'discover'),
+            art_dict=dict(
+                icon='DefaultMovieTitle.png',
+                fanart=get_addon_info('fanart'),
+                poster=addon_icon()
+            )
+        ),
+        TitleItem(
+            title=localize(30012),  # A-Z
+            path=routing.url_for(browse_collection, 'playlists::d554f1ca-5a8a-4d5c-a562-419185d57979'),
+            art_dict=dict(
+                icon='DefaultMovieTitle.png',
+                fanart=get_addon_info('fanart'),
+                poster=addon_icon()
+            )
+        ),
+        TitleItem(
+            title=localize(30013),  # A-Z
+            path=routing.url_for(browse_product, 'events'),
+            art_dict=dict(
+                icon='DefaultMovieTitle.png',
+                fanart=get_addon_info('fanart'),
+                poster=addon_icon()
+            )
+        ),
+        TitleItem(
+            title=localize(30014),  # A-Z
+            path=routing.url_for(search),
+            art_dict=dict(
+                icon='DefaultMovieTitle.png',
+                fanart=get_addon_info('fanart'),
+                poster=addon_icon()
+            )
+        )
+    ]
+
+    show_listing(listing, sort=['unsorted'])
 
 
-@plugin.route('/iptv/play')
+@routing.route('/iptv/play')
 def iptv_play():
     play_uid('linear-borb')
 
 
-@plugin.route('/iptv/channels')
+@routing.route('/iptv/channels')
 def iptv_channels():
     """ Generate channel data for the Kodi PVR integration """
     from iptvmanager import IPTVManager
-    IPTVManager(int(plugin.args['port'][0])).send_channels()  # pylint: disable=too-many-function-args
+    IPTVManager(int(routing.args['port'][0])).send_channels()  # pylint: disable=too-many-function-args
 
 
-@plugin.route('/iptv/epg')
+@routing.route('/iptv/epg')
 def iptv_epg():
     """ Generate EPG data for the Kodi PVR integration """
     from iptvmanager import IPTVManager
-    IPTVManager(int(plugin.args['port'][0])).send_epg()  # pylint: disable=too-many-function-args
+    IPTVManager(int(routing.args['port'][0])).send_epg()  # pylint: disable=too-many-function-args
 
 
-@plugin.route('/play/<uid>')
+@routing.route('/play/<uid>')
 def play_uid(uid):
     play(redbull.get_play_url(uid))
 
 
-@plugin.route('/collection/<uid>')
+@routing.route('/collection/<uid>')
 def browse_collection(uid):
     build_menu(redbull.get_collection_url(uid))
 
 
-@plugin.route('/product/<uid>')
+@routing.route('/product/<uid>')
 def browse_product(uid):
     build_menu(redbull.get_product_url(uid))
 
 
-@plugin.route('/notify/<msg>')
+@routing.route('/notify/<msg>')
 def notify(msg):
     Dialog().ok(msg)
 
 
-@plugin.route('/search')
+@routing.route('/search')
 def search():
     query = get_search_string()
     if query:
@@ -86,7 +130,7 @@ def search():
 
 
 def build_menu(items_url):
-    setContent(plugin.handle, 'videos')
+    setContent(routing.handle, 'videos')
     list_items = []
 
     try:
@@ -116,10 +160,10 @@ def build_menu(items_url):
         return
 
     for list_item in list_items:
-        addDirectoryItem(handle=plugin.handle, url=list_item.getPath(), listitem=list_item, isFolder=(not '/play/' in list_item.getPath()))
+        addDirectoryItem(handle=routing.handle, url=list_item.getPath(), listitem=list_item, isFolder=(not '/play/' in list_item.getPath()))
 
     executebuiltin('Container.SetViewMode({mode})'.format(mode=55)) # Wide List
-    endOfDirectory(plugin.handle)
+    endOfDirectory(routing.handle)
 
 
 def generate_list_item(element, element_type):
@@ -129,9 +173,8 @@ def generate_list_item(element, element_type):
     resources = element.get('resources')
 
     if element.get('playable') or element.get('action') == 'play':
-        list_item.setPath(plugin.url_for(play_uid, uid=uid))
+        list_item.setPath(routing.url_for(play_uid, uid=uid))
         list_item.setProperty('IsPlayable','true')
-        list_item.setInfo(type='video', infoLabels={})
         if element.get('duration'):
             info_labels['duration'] = element.get('duration') / 1000
     elif element.get('type') == 'video' and element.get('status').get('label') == 'Upcoming':
@@ -139,9 +182,9 @@ def generate_list_item(element, element_type):
         from time import timezone
         list_item.setPath('/notify/' + localize(30026), localize(30027), element.get('event_date') + ' (GMT+' + str(timezone / 3600 * -1))
     elif element_type == COLLECTION:
-        list_item.setPath(plugin.url_for(browse_collection, uid=uid))
+        list_item.setPath(routing.url_for(browse_collection, uid=uid))
     elif element_type == PRODUCT:
-        list_item.setPath(plugin.url_for(browse_product, uid=uid))
+        list_item.setPath(routing.url_for(browse_product, uid=uid))
 
     info_labels['title'] = element.get('label') or element.get('title')
     info_labels['genre'] = element.get('subheading')
@@ -164,4 +207,4 @@ def generate_list_item(element, element_type):
 
 def run(params):
     """ Run the routing plugin """
-    plugin.run(params)
+    routing.run(params)
