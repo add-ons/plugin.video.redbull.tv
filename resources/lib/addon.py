@@ -156,12 +156,13 @@ def build_menu(items_url):
         for link in content.get('links'):
             list_items.append(generate_list_item(link, PRODUCT))
 
-    collections = content.get('collections')
-    if collections[0].get('collection_type') == 'top_results': #handle search results
-        content['items'] = collections[0].get('items')
-    else:
-        for collection in content.get('collections'):
-            list_items.append(generate_list_item(collection, COLLECTION))
+    if content.get('collections'):
+        collections = content.get('collections')
+        if collections[0].get('collection_type') == 'top_results': #handle search results
+            content['items'] = collections[0].get('items')
+        else:
+            for collection in collections:
+                list_items.append(generate_list_item(collection, COLLECTION))
 
     if content.get('items'):
         for item in content.get('items'):
@@ -179,7 +180,7 @@ def build_menu(items_url):
 
 
 def generate_list_item(element, element_type):
-    list_item = ListItem(element.get('title'))
+    list_item = ListItem(element.get('label') or element.get('title'))
     info_labels = dict(title=element.get('title'))
     uid = element.get('id')
     resources = element.get('resources')
