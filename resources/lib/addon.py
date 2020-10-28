@@ -144,12 +144,12 @@ def build_menu(items_url):
         for link in content.get('links'):
             list_items.append(generate_list_item(link, PRODUCT))
 
-    if content.get('collections'):
+    collections = content.get('collections')
+    if collections[0].get('collection_type') == 'top_results': #handle search results
+        content['items'] = collections[0].get('items')
+    else:
         for collection in content.get('collections'):
-            if collection.get('collection_type') == 'top_results':
-                content['items'] = collection.get('items')
-            else:
-                list_items.append(generate_list_item(collection, COLLECTION))
+            list_items.append(generate_list_item(collection, COLLECTION))
 
     if content.get('items'):
         for item in content.get('items'):
