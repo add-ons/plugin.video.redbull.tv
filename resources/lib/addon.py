@@ -28,11 +28,14 @@ PRODUCT = 2
 def index():
     """ Show the main menu """
     log('Building main menu')
-    addDirectoryItem(plugin.handle, plugin.url_for(iptv_play), ListItem(localize(30010)), False)
-    addDirectoryItem(plugin.handle, plugin.url_for(browse_product, 'discover'), ListItem(localize(30011)), False)
-    addDirectoryItem(plugin.handle, plugin.url_for(browse_product, 'channels'), ListItem(localize(30012)), False)
-    addDirectoryItem(plugin.handle, plugin.url_for(browse_product, 'events'), ListItem(localize(30013)), False)
-    addDirectoryItem(plugin.handle, plugin.url_for(search), ListItem(localize(30014)), False)
+    list_item = ListItem(localize(30010))
+    list_item.setProperty('IsPlayable','true')
+    list_item.setInfo(type='video', infoLabels={})
+    addDirectoryItem(plugin.handle, plugin.url_for(iptv_play), list_item, False)
+    addDirectoryItem(plugin.handle, plugin.url_for(browse_product, 'discover'), ListItem(localize(30011)), True)
+    addDirectoryItem(plugin.handle, plugin.url_for(browse_product, 'channels'), ListItem(localize(30012)), True)
+    addDirectoryItem(plugin.handle, plugin.url_for(browse_product, 'events'), ListItem(localize(30013)), True)
+    addDirectoryItem(plugin.handle, plugin.url_for(search), ListItem(localize(30014)), True)
     endOfDirectory(plugin.handle)
 
 
@@ -127,6 +130,8 @@ def generate_list_item(element, element_type):
 
     if element.get('playable') or element.get('action') == 'play':
         list_item.setPath(plugin.url_for(play_uid, uid=uid))
+        list_item.setProperty('IsPlayable','true')
+        list_item.setInfo(type='video', infoLabels={})
         if element.get('duration'):
             info_labels['duration'] = element.get('duration') / 1000
     elif element.get('type') == 'video' and element.get('status').get('label') == 'Upcoming':
