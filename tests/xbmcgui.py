@@ -220,6 +220,14 @@ class ListItem:
         self.stream_type = stream_type
         self.stream_info = stream_values
 
+    def getArt(self, key):
+        """A stub implementation for the xbmcgui ListItem class getArt() method"""
+        return self.art.get(key)
+
+    def getPath(self):
+        """A stub implementation for the xbmcgui ListItem class getPath() method"""
+        return self.path
+
     def setArt(self, key):
         """A stub implementation for the xbmcgui ListItem class setArt() method"""
         self.art = key

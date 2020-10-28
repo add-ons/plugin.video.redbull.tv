@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import, division, unicode_literals
 import kodiutils
-from xbmc import log
+
 
 class IPTVManager:
     """ Interface to IPTV Manager """

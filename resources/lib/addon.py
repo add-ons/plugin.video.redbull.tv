@@ -12,17 +12,18 @@ from xbmcgui import ListItem, Dialog
 from xbmcplugin import addDirectoryItem, endOfDirectory, setContent
 
 import kodilogging
-from kodiutils import addon_icon, addon_id, get_search_string, localize, play, TitleItem, get_addon_info, show_listing, addon_available
+from kodiutils import addon_available, addon_fanart, addon_icon, get_search_string, localize, play, show_listing, TitleItem
 
 from redbull import RedBullTV
 
 kodilogging.config()
 routing = routing.Plugin()  # pylint: disable=invalid-name
-redbull = RedBullTV()
+redbull = RedBullTV()  # pylint: disable=invalid-name
 
 _LOGGER = logging.getLogger('addon')
 COLLECTION = 1
 PRODUCT = 2
+
 
 @routing.route('/')
 def index():
@@ -34,7 +35,7 @@ def index():
             path=routing.url_for(iptv_play),
             art_dict=dict(
                 icon='DefaultMovieTitle.png',
-                fanart=get_addon_info('fanart'),
+                fanart=addon_fanart(),
                 poster=addon_icon()
             ),
             info_dict=dict(
@@ -47,7 +48,7 @@ def index():
             path=routing.url_for(browse_product, 'discover'),
             art_dict=dict(
                 icon='DefaultMovieTitle.png',
-                fanart=get_addon_info('fanart'),
+                fanart=addon_fanart(),
                 poster=addon_icon()
             )
         ),
@@ -56,7 +57,7 @@ def index():
             path=routing.url_for(browse_collection, 'playlists::d554f1ca-5a8a-4d5c-a562-419185d57979'),
             art_dict=dict(
                 icon='DefaultMovieTitle.png',
-                fanart=get_addon_info('fanart'),
+                fanart=addon_fanart(),
                 poster=addon_icon()
             )
         ),
@@ -65,34 +66,34 @@ def index():
             path=routing.url_for(browse_product, 'events'),
             art_dict=dict(
                 icon='DefaultMovieTitle.png',
-                fanart=get_addon_info('fanart'),
+                fanart=addon_fanart(),
                 poster=addon_icon()
             )
         )
     ]
 
-    if(addon_available('plugin.video.youtube')):
+    if addon_available('plugin.video.youtube'):
         listing.append(TitleItem(
             title='YouTube',  # A-Z
             path='plugin://plugin.video.youtube/channel/UCblfuW_4rakIf2h6aqANefA/',
             art_dict=dict(
                 icon='DefaultMovieTitle.png',
-                fanart=get_addon_info('fanart'),
-                poster=addon_icon()
-            )
-        ))
-    
-    listing.append(TitleItem(
-            title=localize(30014),  # A-Z
-            path=routing.url_for(search),
-            art_dict=dict(
-                icon='DefaultMovieTitle.png',
-                fanart=get_addon_info('fanart'),
+                fanart=addon_fanart(),
                 poster=addon_icon()
             )
         ))
 
-    show_listing(listing, sort=['unsorted'])
+    listing.append(TitleItem(
+        title=localize(30014),  # A-Z
+        path=routing.url_for(search),
+        art_dict=dict(
+            icon='DefaultMovieTitle.png',
+            fanart=addon_fanart(),
+            poster=addon_icon()
+        )
+    ))
+
+    show_listing(listing, content='videos', sort=['unsorted'])
 
 
 @routing.route('/iptv/play')
@@ -158,7 +159,7 @@ def build_menu(items_url):
 
     if content.get('collections'):
         collections = content.get('collections')
-        if collections[0].get('collection_type') == 'top_results': #handle search results
+        if collections[0].get('collection_type') == 'top_results':  # Handle search results
             content['items'] = collections[0].get('items')
         else:
             for collection in collections:
@@ -173,9 +174,9 @@ def build_menu(items_url):
         return
 
     for list_item in list_items:
-        addDirectoryItem(handle=routing.handle, url=list_item.getPath(), listitem=list_item, isFolder=(not '/play/' in list_item.getPath()))
+        addDirectoryItem(handle=routing.handle, url=list_item.getPath(), listitem=list_item, isFolder=('/play/' not in list_item.getPath()))
 
-    executebuiltin('Container.SetViewMode({mode})'.format(mode=55)) # Wide List
+    executebuiltin('Container.SetViewMode({mode})'.format(mode=55))  # Wide List
     endOfDirectory(routing.handle)
 
 
@@ -187,7 +188,7 @@ def generate_list_item(element, element_type):
 
     if element.get('playable') or element.get('action') == 'play':
         list_item.setPath(routing.url_for(play_uid, uid=uid))
-        list_item.setProperty('IsPlayable','true')
+        list_item.setProperty('IsPlayable', 'true')
         if element.get('duration'):
             info_labels['duration'] = element.get('duration') / 1000
     elif element.get('type') == 'video' and element.get('status').get('label') == 'Upcoming':
