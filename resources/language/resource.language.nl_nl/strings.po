@@ -33,7 +33,7 @@ msgstr "Evenementen"
 
 msgctxt "#30014"
 msgid "Search"
-msgstr "Doorzoek"
+msgstr "Zoeken"
 
 
 msgctxt "#30200"

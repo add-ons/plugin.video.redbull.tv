@@ -526,3 +526,6 @@ def delete(path):
     """Remove a file (using xbmcvfs)"""
     from xbmcvfs import delete as vfsdelete
     return vfsdelete(path)
+
+def addon_available(addon_name):
+    return xbmc.getCondVisibility('System.HasAddon(%s)' % addon_name) == 1

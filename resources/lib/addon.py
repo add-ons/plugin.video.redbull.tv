@@ -12,7 +12,7 @@ from xbmcgui import ListItem, Dialog
 from xbmcplugin import addDirectoryItem, endOfDirectory, setContent
 
 import kodilogging
-from kodiutils import addon_icon, addon_id, get_search_string, localize, play, TitleItem, get_addon_info, show_listing
+from kodiutils import addon_icon, addon_id, get_search_string, localize, play, TitleItem, get_addon_info, show_listing, addon_available
 
 from redbull import RedBullTV
 
@@ -68,8 +68,21 @@ def index():
                 fanart=get_addon_info('fanart'),
                 poster=addon_icon()
             )
-        ),
-        TitleItem(
+        )
+    ]
+
+    if(addon_available('plugin.video.youtube')):
+        listing.append(TitleItem(
+            title='YouTube',  # A-Z
+            path='plugin://plugin.video.youtube/channel/UCblfuW_4rakIf2h6aqANefA/',
+            art_dict=dict(
+                icon='DefaultMovieTitle.png',
+                fanart=get_addon_info('fanart'),
+                poster=addon_icon()
+            )
+        ))
+    
+    listing.append(TitleItem(
             title=localize(30014),  # A-Z
             path=routing.url_for(search),
             art_dict=dict(
@@ -77,8 +90,7 @@ def index():
                 fanart=get_addon_info('fanart'),
                 poster=addon_icon()
             )
-        )
-    ]
+        ))
 
     show_listing(listing, sort=['unsorted'])
 
