@@ -68,6 +68,7 @@ jobs:
         with:
           kodi-repository: repo-plugins
           addon-id: plugin.video.redbulltv
+          kodi-version: leia
           kodi-matrix: true
         env:
           GH_USERNAME: ${{secrets.GH_USERNAME}}
