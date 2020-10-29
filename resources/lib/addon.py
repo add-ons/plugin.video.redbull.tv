@@ -146,8 +146,7 @@ def build_menu(items_url):
     try:
         content = redbull.get_content(items_url)
     except IOError:
-        # Error getting data from Redbull server
-        ok_dialog(localize(30220), localize(30221), localize(30222))
+        ok_dialog(localize(30220), localize(30221))  # Error getting data from Redbull server
         return
 
     if content.get('links'):
@@ -167,7 +166,7 @@ def build_menu(items_url):
             list_items.append(generate_list_item(item, PRODUCT))
 
     if not list_items:
-        ok_dialog(localize(30223), localize(30224), localize(30225))
+        ok_dialog(localize(30222), localize(30223))  # No results found
         return
 
     for list_item in list_items:
@@ -192,7 +191,7 @@ def generate_list_item(element, element_type):
     elif element.get('type') == 'video' and element.get('status').get('label') == 'Upcoming':
         info_labels['premiered'] = element.get('status').get('start_time')
         from time import timezone
-        list_item.setPath('/notify/' + localize(30026), localize(30027), element.get('event_date') + ' (GMT+' + str(timezone / 3600 * -1))
+        list_item.setPath('/notify/' + localize(30024), localize(30025), element.get('event_date') + ' (GMT+' + str(timezone / 3600 * -1))
     elif element_type == COLLECTION:
         list_item.setPath(plugin.url_for(browse_collection, uid=uid))
     elif element_type == PRODUCT:
