@@ -1,3 +1,31 @@
-*.py[co]
-**/.DS_Store
-.vscode/
+*.swp
+*.*~
+project.lock.json
+.DS_Store
+nupkg/
+
+# Visual Studio
+#plugin.video.vrt.nu.pyproj
+#plugin.video.vrt.nu.sln
+.vs/
+.vscode
+
+# Test caches
+*.py[cod]
+.coverage
+.pytest_cache/
+.tox/
+
+# Profile data
+*.bin
+
+# Packages
+*.zip
+
+# Logs
+kodi-addon-checker.log
+kodi-addon-checker-report.log
+
+# Temporary
+experiment/
+nohup.out

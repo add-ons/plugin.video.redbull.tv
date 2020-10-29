@@ -3,11 +3,8 @@
 """ Implementation of RedBullTV class """
 
 from __future__ import absolute_import, division, unicode_literals
-
 import xbmc
-import kodiutils
-import kodilogging
-from kodiutils import addon_icon, addon_id, localize
+from kodiutils import to_unicode
 
 
 class RedBullTV():
@@ -16,26 +13,20 @@ class RedBullTV():
     REDBULL_API = 'https://api.redbull.tv/v3/'
     REDBULL_RESOURCES = 'https://resources.redbull.tv/'
 
-
     def __init__(self):
         self.token = self.get_json(self.REDBULL_API + 'session?category=smart_tv&os_family=android', use_token=False)['token']
-
 
     def get_play_url(self, uid):
         return self.REDBULL_STREAMS + uid + '/' + self.token + '/playlist.m3u8'
 
-
     def get_collection_url(self, uid):
-        return self.REDBULL_API +  'collections/' + uid
-
+        return self.REDBULL_API + 'collections/' + uid
 
     def get_product_url(self, uid):
-        return self.REDBULL_API +  'products/' + uid
-
+        return self.REDBULL_API + 'products/' + uid
 
     def get_search_url(self, query):
         return self.REDBULL_API + 'search?q=' + query
-
 
     def get_json(self, url, use_token=False):
         try:  # Python 3
@@ -50,16 +41,15 @@ class RedBullTV():
         try:
             response = urlopen(request)
         except URLError as exc:
-            raise IOError(*err.reason)
-        
+            raise IOError(*exc.reason)  # pylint: disable=raise-missing-from
+
         from json import loads
         xbmc.log('Access: {url}'.format(url=url), xbmc.LOGINFO)
-        return loads(response.read())
-
+        # NOTE: With Python 3.5 and older json.loads() does not support bytes or bytearray, so we convert to unicode
+        return loads(to_unicode(response.read()))
 
     def get_epg(self):
         return self.get_json(self.REDBULL_API + 'epg?complete=true', use_token=True)
-
 
     def get_image_url(self, element_id, resources, element_type, width=1024, quality=70):
         if element_type == 'fanart':
@@ -94,7 +84,6 @@ class RedBullTV():
             return None
 
         return '{base}/{id}/{type}/im:i:w_{width},q_{quality}'.format(base=self.REDBULL_RESOURCES, id=element_id, type=image_type, width=width, quality=quality)
-
 
     def get_content(self, url=None, page=1, limit=20):
         return self.get_json(url + ('?', '&')['?' in url] + 'limit=' + str(limit) + '&offset=' + str((page - 1) * limit), use_token=True)

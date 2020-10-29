@@ -85,19 +85,19 @@ def from_unicode(text, encoding='utf-8', errors='strict'):
     return text
 
 
+def addon_fanart():
+    """Return add-on fanart"""
+    return get_addon_info('fanart')
+
+
 def addon_icon():
-    """Cache and return add-on icon"""
+    """Return add-on icon"""
     return get_addon_info('icon')
 
 
 def addon_id():
-    """Cache and return add-on ID"""
+    """Return add-on ID"""
     return get_addon_info('id')
-
-
-def addon_fanart():
-    """Cache and return add-on fanart"""
-    return get_addon_info('fanart')
 
 
 def addon_name():
@@ -203,7 +203,7 @@ def play(stream, title=None, art_dict=None, info_dict=None, prop_dict=None):
         play_item.setInfo(type='video', infoLabels=info_dict)
     if prop_dict:
         play_item.setProperties(prop_dict)
-    
+
     # Setup Inputstream Adaptive
     if kodi_version_major() >= 19:
         play_item.setProperty('inputstream', 'inputstream.adaptive')
@@ -527,5 +527,6 @@ def delete(path):
     from xbmcvfs import delete as vfsdelete
     return vfsdelete(path)
 
-def addon_available(addon_name):
-    return xbmc.getCondVisibility('System.HasAddon(%s)' % addon_name) == 1
+
+def addon_available(name):
+    return xbmc.getCondVisibility('System.HasAddon({name})'.format(name=name)) == 1

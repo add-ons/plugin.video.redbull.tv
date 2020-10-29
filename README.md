@@ -49,18 +49,37 @@ content available on [Red Bull TV](https://www.redbull.com/discover).
 
 ### v2.0.0 (2017-10-21)
 
+### v1.2.2
+
+### v1.2.1
+
+### v1.2.0
+
+### v1.1.0
+
+### v1.0.1
+
+### v0.1.0 (2017-09-22)
+- Moved RedbullTV functionality into a RedbullTV2 Client
+- Add settings to specify preferred video resolution
+- Added Unit Tests
+- Added Integration Tests
+- Added Continuous Integration with Travis CI
+
 ### v0.0.5 (2017-04-13)
 - Added search function
 
 ### v0.0.4 (2017-03-23)
-- Packaged update
-- Code cleanup, directory icons
+- Code cleanup/refactoring
+- Added thumbnailimage and summary to directories
 
 ### v0.0.3 (2017-03-12)
-- See changelog in README
+- Fixed compatibility issue with Kodi forks (like SPMC) using python 2.6
+- Added error handling for when the server url errors out
 
 ### v0.0.2 (2017-03-11)
-- Added some polish, fixed an issue with scheduled events
+- Fixed issue with scheduled event streams not appearing in lists
+- Added plugin icon/fanart
 
 ### v0.0.1 (2017-03-11)
-- Basic working plugin
+- Initial Release

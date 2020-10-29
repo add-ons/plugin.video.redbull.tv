@@ -29,8 +29,7 @@ reset = \e[0;39m
 
 all: check test build
 zip: build
-#test: check test-unit test-run
-test: check test-run
+test: check test-unit test-run
 
 check: check-tox check-pylint check-translations
 
@@ -60,13 +59,14 @@ kill-proxy:
 unit: test-unit
 run: test-run
 
-test-unit: clean kill-proxy
+test-unit: clean
 	@echo -e "$(white)=$(blue) Starting unit tests$(reset)"
 	$(PYTHON) -m unittest discover -v
 
 test-run:
 	@echo -e "$(white)=$(blue) Run CLI$(reset)"
-	$(PYTHON) tests/run.py $(path)
+	$(PYTHON) tests/run.py /
+	$(PYTHON) tests/run.py /product/discover
 
 profile:
 	@echo -e "$(white)=$(blue) Profiling $(white)$(path)$(reset)"
