@@ -45,30 +45,22 @@ msgid "Error"
 msgstr "Fout"
 
 msgctxt "#30221"
-msgid "Error getting data from Redbull server."
-msgstr "Fout bij het ophalen van data van de Redbull server"
+msgid "Error getting data from Redbull server.[BR]Try again shortly."
+msgstr "Fout bij het ophalen van data van de Redbull server[BR]Probeer later opnieuw."
 
 msgctxt "#30222"
-msgid "Try again shortly"
-msgstr "Probeer later opnieuw"
-
-msgctxt "#30223"
 msgid "No Results"
 msgstr "Geen resultaat"
 
+msgctxt "#30223"
+msgid "No results found.[BR]Please try another menu or search string."
+msgstr "Geen resultaat gevonden.[BR]Probeer een ander menu of zoekopdracht."
+
 msgctxt "#30224"
-msgid "No results found"
-msgstr "Geen resultaat gevonden"
-
-msgctxt "#30225"
-msgid "Please try another menu or search string"
-msgstr "Probeer een ander menu of zoekopdracht"
-
-msgctxt "#30226"
 msgid "Upcoming Event"
 msgstr "Volgend evenement"
 
-msgctxt "#30227"
+msgctxt "#30225"
 msgid "This event is scheduled to start on:"
 msgstr "Dit evenement is gepland om te starten op:"
 
