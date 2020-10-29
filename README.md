@@ -1,12 +1,12 @@
-[![GitHub release](https://img.shields.io/github/release/add-ons/plugin.video.redbulltv.svg)](https://github.com/add-ons/plugin.video.redbulltv/releases)
-[![Build status](https://github.com/add-ons/plugin.video.redbulltv/workflows/CI/badge.svg)](https://github.com/add-ons/plugin.video.redbulltv/actions)
-[![Codecov status](https://img.shields.io/codecov/c/github/add-ons/plugin.video.redbulltv/master)](https://codecov.io/gh/add-ons/plugin.video.redbulltv/branch/master)
+[![GitHub release](https://img.shields.io/github/release/add-ons/plugin.video.redbull.tv.svg)](https://github.com/add-ons/plugin.video.redbull.tv/releases)
+[![Build status](https://github.com/add-ons/plugin.video.redbull.tv/workflows/CI/badge.svg)](https://github.com/add-ons/plugin.video.redbull.tv/actions)
+[![Codecov status](https://img.shields.io/codecov/c/github/add-ons/plugin.video.redbull.tv/master)](https://codecov.io/gh/add-ons/plugin.video.redbull.tv/branch/master)
 [![License: GPLv3](https://img.shields.io/badge/License-GPLv3-yellow.svg)](https://opensource.org/licenses/GPL-3.0)
-[![Contributors](https://img.shields.io/github/contributors/add-ons/plugin.video.redbulltv.svg)](https://github.com/add-ons/plugin.video.redbulltv/graphs/contributors)
+[![Contributors](https://img.shields.io/github/contributors/add-ons/plugin.video.redbull.tv.svg)](https://github.com/add-ons/plugin.video.redbull.tv/graphs/contributors)
 
 # Kodi add-on for Red Bull TV
 
-**plugin.video.redbulltv** is a [Kodi](https://kodi.tv/) add-on for watching live streams *and* all video-on-demand
+**plugin.video.redbull.tv** is a [Kodi](https://kodi.tv/) add-on for watching live streams *and* all video-on-demand
 content available on [Red Bull TV](https://www.redbull.com/discover).
 
 ## Features
@@ -36,6 +36,7 @@ content available on [Red Bull TV](https://www.redbull.com/discover).
 - Support VOD playback from EPG via context menu
 - Add YouTube integration (requires YouTube add-on)
 - Improve channel listing
+- New add-on icon
 
 ### v3.1.0
 - IPTV Manager support

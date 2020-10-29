@@ -21,12 +21,12 @@ xbmcplugin = __import__('xbmcplugin')
 xbmcvfs = __import__('xbmcvfs')
 
 if len(sys.argv) <= 1:
-    print("%s: URI argument missing\nTry '%s plugin://plugin.video.redbulltv/' to test." % (sys.argv[0], sys.argv[0]))
+    print("%s: URI argument missing\nTry '%s plugin://plugin.video.redbull.tv/' to test." % (sys.argv[0], sys.argv[0]))
     sys.exit(1)
 
 # Also support bare paths like /recent/2
 if not sys.argv[1].startswith('plugin://'):
-    sys.argv[1] = 'plugin://plugin.video.redbulltv' + sys.argv[1]
+    sys.argv[1] = 'plugin://plugin.video.redbull.tv' + sys.argv[1]
 
 # Split path and args
 path, _, args = sys.argv[1].partition('?')

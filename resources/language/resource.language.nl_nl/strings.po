@@ -1,8 +1,8 @@
 # Red bull TV language file
 msgid ""
 msgstr ""
-"Project-Id-Version: plugin.video.redbulltv\n"
-"Report-Msgid-Bugs-To: https://github.com/add-ons/plugin.video.redbulltv\n"
+"Project-Id-Version: plugin.video.redbull.tv\n"
+"Report-Msgid-Bugs-To: https://github.com/add-ons/plugin.video.redbull.tv\n"
 "POT-Creation-Date: 2018-01-12 21:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
