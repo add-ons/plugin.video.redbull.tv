@@ -48,19 +48,19 @@ class IPTVManager:
     @via_socket
     def send_epg(self):  # pylint: disable=no-method-argument,no-self-use
         """ Return JSON-EPG formatted information to IPTV Manager. """
-        from redbull import RedBullTV
         from collections import defaultdict
         from datetime import datetime
+        from dateutil.tz import UTC
         from kodiutils import url_for
-
-        epg = defaultdict(list)
+        from redbull import RedBullTV
 
         redbull = RedBullTV()
 
+        epg = defaultdict(list)
         for item in redbull.get_epg().get('items'):
             epg['redbulltv'].append(dict(
-                start=datetime.strptime(item.get('start_time'), "%Y-%m-%dT%H:%M:%S.%fZ").isoformat(),
-                stop=datetime.strptime(item.get('end_time'), "%Y-%m-%dT%H:%M:%S.%fZ").isoformat(),
+                start=datetime.strptime(item.get('start_time'), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).isoformat(),
+                stop=datetime.strptime(item.get('end_time'), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).isoformat(),
                 title=item.get('title'),
                 description=item.get('long_description'),
                 subtitle=item.get('subheading'),
