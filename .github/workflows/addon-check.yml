@@ -1,4 +1,4 @@
-name: Kodi
+name: Addon checker
 on:
 - pull_request
 - push
