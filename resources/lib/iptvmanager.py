@@ -3,7 +3,6 @@
 """ Implementation of IPTVManager class """
 
 from __future__ import absolute_import, division, unicode_literals
-import kodiutils
 
 
 class IPTVManager:
@@ -32,6 +31,7 @@ class IPTVManager:
     @via_socket
     def send_channels(self):  # pylint: disable=no-method-argument,no-self-use
         """ Return JSON-STREAMS formatted information to IPTV Manager. """
+        from kodiutils import addon_icon
 
         streams = []
 
@@ -39,7 +39,7 @@ class IPTVManager:
             name="Red Bull TV",
             stream="plugin://plugin.video.redbulltv/iptv/play",
             id="redbulltv",
-            logo=kodiutils.get_addon_info("icon"),
+            logo=addon_icon(),
             preset=88,
         ))
 

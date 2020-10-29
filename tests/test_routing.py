@@ -18,7 +18,7 @@ xbmcgui = __import__('xbmcgui')
 xbmcplugin = __import__('xbmcplugin')
 xbmcvfs = __import__('xbmcvfs')
 
-routing = addon.routing
+plugin = addon.plugin
 now = datetime.now(dateutil.tz.tzlocal())
 lastweek = now + timedelta(days=-7)
 
@@ -29,37 +29,37 @@ class TestRouting(unittest.TestCase):
     def test_main_menu(self):
         """Main menu: /"""
         addon.run(['plugin://plugin.video.redbulltv/', '0', ''])
-        self.assertEqual(routing.url_for(addon.index), 'plugin://plugin.video.redbulltv/')
+        self.assertEqual(plugin.url_for(addon.index), 'plugin://plugin.video.redbulltv/')
 
     def test_iptv_play(self):
         """IPTV Play: /iptv/play"""
         addon.run(['plugin://plugin.video.redbulltv/iptv/play', '0', ''])
-        self.assertEqual(routing.url_for(addon.iptv_play), 'plugin://plugin.video.redbulltv/iptv/play')
+        self.assertEqual(plugin.url_for(addon.iptv_play), 'plugin://plugin.video.redbulltv/iptv/play')
 
     def test_discover(self):
         """Discover menu: /product/discover"""
         addon.run(['plugin://plugin.video.redbulltv/product/discover', '0', ''])
-        self.assertEqual(routing.url_for(addon.browse_product, 'discover'), 'plugin://plugin.video.redbulltv/product/discover')
+        self.assertEqual(plugin.url_for(addon.browse_product, 'discover'), 'plugin://plugin.video.redbulltv/product/discover')
 
     def test_channels(self):
         """Channels menu: /collection/playlists::d554f1ca-5a8a-4d5c-a562-419185d57979"""
         addon.run(['plugin://plugin.video.redbulltv/collection/playlists::d554f1ca-5a8a-4d5c-a562-419185d57979', '0', ''])
-        self.assertEqual(routing.url_for(addon.browse_collection, 'playlists::d554f1ca-5a8a-4d5c-a562-419185d57979'), 'plugin://plugin.video.redbulltv/collection/playlists::d554f1ca-5a8a-4d5c-a562-419185d57979')
+        self.assertEqual(plugin.url_for(addon.browse_collection, 'playlists::d554f1ca-5a8a-4d5c-a562-419185d57979'), 'plugin://plugin.video.redbulltv/collection/playlists::d554f1ca-5a8a-4d5c-a562-419185d57979')
 
     def test_events(self):
         """Events menu: /product/events"""
         addon.run(['plugin://plugin.video.redbulltv/product/events', '0', ''])
-        self.assertEqual(routing.url_for(addon.browse_product, 'events'), 'plugin://plugin.video.redbulltv/product/events')
+        self.assertEqual(plugin.url_for(addon.browse_product, 'events'), 'plugin://plugin.video.redbulltv/product/events')
 
     def test_search(self):
         """Search menu: /product/search"""
         addon.run(['plugin://plugin.video.redbulltv/search', '0', ''])
-        self.assertEqual(routing.url_for(addon.search), 'plugin://plugin.video.redbulltv/search')
+        self.assertEqual(plugin.url_for(addon.search), 'plugin://plugin.video.redbulltv/search')
 
     def test_collection(self):
         """Collection lookup: /collection/rrn:content:collections:6270a470-02f2-4276-a9f1-8f0d93e6a055:international"""
         addon.run(['plugin://plugin.video.redbulltv/collection/rrn:content:collections:6270a470-02f2-4276-a9f1-8f0d93e6a055:international', '0', ''])
-        self.assertEqual(routing.url_for(addon.browse_collection, 'rrn:content:collections:6270a470-02f2-4276-a9f1-8f0d93e6a055:international'), 'plugin://plugin.video.redbulltv/collection/rrn:content:collections:6270a470-02f2-4276-a9f1-8f0d93e6a055:international')
+        self.assertEqual(plugin.url_for(addon.browse_collection, 'rrn:content:collections:6270a470-02f2-4276-a9f1-8f0d93e6a055:international'), 'plugin://plugin.video.redbulltv/collection/rrn:content:collections:6270a470-02f2-4276-a9f1-8f0d93e6a055:international')
 
 
 if __name__ == '__main__':
