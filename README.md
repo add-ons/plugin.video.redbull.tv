@@ -36,6 +36,7 @@ content available on [Red Bull TV](https://www.redbull.com/discover).
 - Support VOD playback from EPG via context menu
 - Add YouTube integration (requires YouTube add-on)
 - Improve channel listing
+- New add-on icon
 
 ### v3.1.0
 - IPTV Manager support
