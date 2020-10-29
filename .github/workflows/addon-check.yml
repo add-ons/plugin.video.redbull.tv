@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        kodi-branch: [krypton, leia, matrix]
+        kodi-branch: [leia, matrix]
     steps:
     - uses: actions/checkout@v2
       with:
