@@ -37,7 +37,7 @@ class IPTVManager:
 
         streams.append(dict(
             name="Red Bull TV",
-            stream="plugin://plugin.video.redbulltv/iptv/play",
+            stream="plugin://plugin.video.redbull.tv/iptv/play",
             id="redbulltv",
             logo=addon_icon(),
             preset=88,

@@ -2,9 +2,9 @@
     "inputstream.adaptive": {
         "DECRYPTERPATH": "special://home/cdm"
     },
-    "plugin.video.redbulltv": {
-        "iptv.channels_uri": "plugin://plugin.video.redbulltv/iptv/channels",
+    "plugin.video.redbull.tv": {
+        "iptv.channels_uri": "plugin://plugin.video.redbull.tv/iptv/channels",
         "iptv.enabled": "true",
-        "iptv.epg_uri": "plugin://plugin.video.redbulltv/iptv/epg"
+        "iptv.epg_uri": "plugin://plugin.video.redbull.tv/iptv/epg"
     }
 }

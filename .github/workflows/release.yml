@@ -5,7 +5,7 @@ on:
     - 'v*'
 jobs:
   build:
-    name: Release plugin.video.redbulltv
+    name: Release plugin.video.redbull.tv
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -17,11 +17,11 @@ jobs:
       - name: Get Leia filename
         id: get-leia-filename
         run: |
-          echo ::set-output name=leia-filename::$(cd ..;ls plugin.video.redbulltv*.zip | grep -v '+matrix.' | head -1)
+          echo ::set-output name=leia-filename::$(cd ..;ls plugin.video.redbull.tv*.zip | grep -v '+matrix.' | head -1)
       - name: Get Matrix filename
         id: get-matrix-filename
         run: |
-          echo ::set-output name=matrix-filename::$(cd ..;ls plugin.video.redbulltv*+matrix.*.zip | head -1)
+          echo ::set-output name=matrix-filename::$(cd ..;ls plugin.video.redbull.tv*+matrix.*.zip | head -1)
       - name: Get body
         id: get-body
         run: |
@@ -67,7 +67,7 @@ jobs:
         uses: xbmc/action-kodi-addon-submitter@v1.2
         with:
           kodi-repository: repo-plugins
-          addon-id: plugin.video.redbulltv
+          addon-id: plugin.video.redbull.tv
           kodi-version: leia
           kodi-matrix: true
         env:
