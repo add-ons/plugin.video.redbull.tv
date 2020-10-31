@@ -173,7 +173,6 @@ def build_menu(items_url):
     for list_item in list_items:
         addDirectoryItem(handle=plugin.handle, url=list_item.getPath(), listitem=list_item, isFolder=('/play/' not in list_item.getPath()))
 
-    executebuiltin('Container.SetViewMode({mode})'.format(mode=55))  # Wide List
     endOfDirectory(plugin.handle)
 
 
