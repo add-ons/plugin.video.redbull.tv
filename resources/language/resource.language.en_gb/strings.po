@@ -73,6 +73,10 @@ msgctxt "#30227"
 msgid "This event is scheduled to start on:"
 msgstr ""
 
+msgctxt "#30228"
+msgid "Best of Red Bull TV"
+msgstr ""
+
 ### SETTINGS
 msgctxt "#30860"
 msgid "Integration"

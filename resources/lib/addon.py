@@ -34,7 +34,7 @@ def index():
                 poster=addon_icon()
             ),
             info_dict=dict(
-                plot='Best of Red Bull TV',
+                plot=localize(30228),
             ),
             is_playable=True
         ),
