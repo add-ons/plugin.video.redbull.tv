@@ -61,7 +61,11 @@ class IPTVManager:
         epg = defaultdict(list)
 
         for item in redbull.get_epg().get('items'):
-            if (item.get('start_time') and item.get('end_time') and re.match('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z', item.get('start_time')) and re.match('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z', item.get('end_time'))):
+            if (
+                    item.get('start_time')
+                    and item.get('end_time')
+                    and re.match('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z', item.get('start_time')) # pylint: disable=anomalous-backslash-in-string
+                    and re.match('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z', item.get('end_time'))): # pylint: disable=anomalous-backslash-in-string
                 epg['redbulltv'].append(dict(
                     start=datetime.strptime(item.get('start_time'), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).isoformat(),
                     stop=datetime.strptime(item.get('end_time'), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).isoformat(),
