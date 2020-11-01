@@ -59,9 +59,9 @@ class IPTVManager:
         redbull = RedBullTV()
 
         epg = defaultdict(list)
-        
+
         for item in redbull.get_epg().get('items'):
-            if item.get('start_time') and item.get('end_time') and re.match('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z', item.get('start_time')) and re.match('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z', item.get('end_time')):
+            if (item.get('start_time') and item.get('end_time') and re.match('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z', item.get('start_time')) and re.match('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z', item.get('end_time'))):
                 epg['redbulltv'].append(dict(
                     start=datetime.strptime(item.get('start_time'), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).isoformat(),
                     stop=datetime.strptime(item.get('end_time'), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).isoformat(),
@@ -73,6 +73,6 @@ class IPTVManager:
                     stream=url_for('play_uid', uid=item.get('id'))
                 ))
             else:
-                log("Invalid start or end time for Red Bull item ID {uid}".format(item.get('id')))
+                log("Invalid start or end time for Red Bull item ID {uid}".format(uid=item.get('id')))
 
         return dict(version=1, epg=epg)
