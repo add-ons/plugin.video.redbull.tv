@@ -32,6 +32,10 @@ content available on [Red Bull TV](https://www.redbull.com/discover).
 </table>
 
 ## Releases
+### v3.2.1 (2020-10-31)
+- Fix OK dialog (@dagwiers)
+- Catch missing EPG time markers (@dagpiejanssens)
+
 ### v3.2.0 (2020-10-29)
 - Support VOD playback from EPG via context menu (@piejanssens)
 - Add YouTube integration (@piejanssens)

@@ -188,12 +188,6 @@ class VideoInfoTag(object):  # pylint: disable=useless-object-inheritance
         return 0
 
 
-def executebuiltin(string, wait=False):  # pylint: disable=unused-argument
-    """A stub implementation of the xbmc executebuiltin() function"""
-    assert isinstance(string, basestring)
-    assert isinstance(wait, bool)
-
-
 def executeJSONRPC(jsonrpccommand):
     """A reimplementation of the xbmc executeJSONRPC() function"""
     assert isinstance(jsonrpccommand, basestring)

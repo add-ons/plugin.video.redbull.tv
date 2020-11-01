@@ -34,7 +34,7 @@ def index():
                 poster=addon_icon()
             ),
             info_dict=dict(
-                plot='Best of Red Bull TV',
+                plot=localize(30228),
             ),
             is_playable=True
         ),
@@ -138,7 +138,6 @@ def search():
 
 
 def build_menu(items_url):
-    from xbmc import executebuiltin
     from xbmcplugin import addDirectoryItem, endOfDirectory, setContent
     setContent(plugin.handle, 'videos')
     list_items = []
@@ -172,7 +171,6 @@ def build_menu(items_url):
     for list_item in list_items:
         addDirectoryItem(handle=plugin.handle, url=list_item.getPath(), listitem=list_item, isFolder=('/play/' not in list_item.getPath()))
 
-    executebuiltin('Container.SetViewMode({mode})'.format(mode=55))  # Wide List
     endOfDirectory(plugin.handle)
 
 

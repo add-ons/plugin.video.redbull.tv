@@ -4,6 +4,7 @@
 
 from __future__ import absolute_import, division, unicode_literals
 
+from xbmc import log
 
 class IPTVManager:
     """ Interface to IPTV Manager """
@@ -48,6 +49,7 @@ class IPTVManager:
     @via_socket
     def send_epg(self):  # pylint: disable=no-method-argument,no-self-use
         """ Return JSON-EPG formatted information to IPTV Manager. """
+        import re
         from collections import defaultdict
         from datetime import datetime
         from dateutil.tz import UTC
@@ -57,16 +59,24 @@ class IPTVManager:
         redbull = RedBullTV()
 
         epg = defaultdict(list)
+
         for item in redbull.get_epg().get('items'):
-            epg['redbulltv'].append(dict(
-                start=datetime.strptime(item.get('start_time'), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).isoformat(),
-                stop=datetime.strptime(item.get('end_time'), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).isoformat(),
-                title=item.get('title'),
-                description=item.get('long_description'),
-                subtitle=item.get('subheading'),
-                genre='Sport',
-                image=redbull.get_image_url(item.get('id'), item.get('resources'), 'landscape'),
-                stream=url_for('play_uid', uid=item.get('id'))
-            ))
+            if (
+                    item.get('start_time')
+                    and item.get('end_time')
+                    and re.match('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z', item.get('start_time')) # pylint: disable=anomalous-backslash-in-string
+                    and re.match('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z', item.get('end_time'))): # pylint: disable=anomalous-backslash-in-string
+                epg['redbulltv'].append(dict(
+                    start=datetime.strptime(item.get('start_time'), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).isoformat(),
+                    stop=datetime.strptime(item.get('end_time'), "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).isoformat(),
+                    title=item.get('title'),
+                    description=item.get('long_description'),
+                    subtitle=item.get('subheading'),
+                    genre='Sport',
+                    image=redbull.get_image_url(item.get('id'), item.get('resources'), 'landscape'),
+                    stream=url_for('play_uid', uid=item.get('id'))
+                ))
+            else:
+                log("Invalid start or end time for Red Bull item ID {uid}".format(uid=item.get('id')))
 
         return dict(version=1, epg=epg)
