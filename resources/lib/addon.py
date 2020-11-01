@@ -138,7 +138,6 @@ def search():
 
 
 def build_menu(items_url):
-    from xbmc import executebuiltin
     from xbmcplugin import addDirectoryItem, endOfDirectory, setContent
     setContent(plugin.handle, 'videos')
     list_items = []
