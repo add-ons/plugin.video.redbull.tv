@@ -32,6 +32,7 @@
 v3.2.2
 - Fix EPG loading
 - Support for Python 3.9
+- Allow installing IPTV Manager from the add-on settings 
 
 v3.2.1
 - Fix OK dialog

@@ -39,6 +39,7 @@ content available on [Red Bull TV](https://www.redbull.com/discover).
 - Add GitHub CI workflow for testing EPG issues (@dagwiers)
 - Add python 3.9 support (@dagwiers)
 - Add descriptions to GitHub CI workflows (@dagwiers)
+- Allow installing IPTV Manager from the add-on settings (@michaelarnauts)
 
 ### v3.2.1 (2020-10-31)
 - Fix OK dialog (@dagwiers)
