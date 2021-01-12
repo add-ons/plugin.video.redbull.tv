@@ -26,6 +26,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-#    - name: TEST IPTV Manager EPG
-#      run: python -m unittest -v test_iptvmanager.TestIPTVManager.test_get_iptv_epg
-#      if: always()
+    - name: TEST IPTV Manager EPG
+      run: python -m unittest -v test_iptvmanager.TestIPTVManager.test_get_iptv_epg
+      if: always()
