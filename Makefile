@@ -14,7 +14,7 @@ else
 	zip_name = $(name)-$(version)-$(git_branch)-$(git_hash).zip
 endif
 
-include_files = addon.xml addon_entry.py LICENSE README.md resources/
+include_files = addon.xml LICENSE README.md resources/
 include_paths = $(patsubst %,$(name)/%,$(include_files))
 exclude_files = \*.new \*.orig \*.pyc \*.pyo
 zip_dir = $(name)/
@@ -34,22 +34,21 @@ test: check test-unit test-run
 check: check-tox check-pylint check-translations
 
 check-tox:
-	@echo -e "$(white)=$(blue) Starting sanity tox test$(reset)"
+	@printf "$(white)=$(blue) Starting sanity tox test$(reset)\n"
 	$(PYTHON) -m tox -q
 
 check-pylint:
-	@echo -e "$(white)=$(blue) Starting sanity pylint test$(reset)"
-	$(PYTHON) -m pylint resources/lib/
-	#$(PYTHON) -m pylint resources/lib/ tests/
+	@printf "$(white)=$(blue) Starting sanity pylint test$(reset)\n"
+	$(PYTHON) -m pylint resources/lib/ tests/
 
 check-translations:
-	@echo -e "$(white)=$(blue) Starting language test$(reset)"
+	@printf "$(white)=$(blue) Starting language test$(reset)\n"
 	@-$(foreach lang,$(languages), \
 		msgcmp resources/language/resource.language.$(lang)/strings.po resources/language/resource.language.en_gb/strings.po; \
 	)
 
 check-addon: clean
-	@echo -e "$(white)=$(blue) Starting sanity addon tests$(reset)"
+	@printf "$(white)=$(blue) Starting sanity addon tests$(reset)\n"
 	kodi-addon-checker . --branch=krypton
 	kodi-addon-checker . --branch=leia
 
@@ -60,35 +59,35 @@ unit: test-unit
 run: test-run
 
 test-unit: clean
-	@echo -e "$(white)=$(blue) Starting unit tests$(reset)"
+	@printf "$(white)=$(blue) Starting unit tests$(reset)\n"
 	$(PYTHON) -m unittest discover -v
 
 test-run:
-	@echo -e "$(white)=$(blue) Run CLI$(reset)"
+	@printf "$(white)=$(blue) Run CLI$(reset)\n"
 	$(PYTHON) tests/run.py /
 	$(PYTHON) tests/run.py /product/discover
 
 profile:
-	@echo -e "$(white)=$(blue) Profiling $(white)$(path)$(reset)"
+	@printf "$(white)=$(blue) Profiling $(white)$(path)$(reset)\n"
 	$(PYTHON) -m cProfile -o profiling_stats-$(git_branch)-$(git_hash).bin tests/run.py $(path)
 
 build: clean
-	@echo -e "$(white)=$(blue) Building new package$(reset)"
+	@printf "$(white)=$(blue) Building new package$(reset)\n"
 	@rm -f ../$(zip_name)
 	cd ..; zip -r $(zip_name) $(include_paths) -x $(exclude_files)
-	@echo -e "$(white)=$(blue) Successfully wrote package as: $(white)../$(zip_name)$(reset)"
+	@printf "$(white)=$(blue) Successfully wrote package as: $(white)../$(zip_name)$(reset)\n"
 
 multizip: clean
 	@-$(foreach abi,$(KODI_PYTHON_ABIS), \
-		echo "cd /addon/requires/import[@addon='xbmc.python']/@version\nset $(abi)\nsave\nbye" | xmllint --shell addon.xml; \
+		printf "cd /addon/requires/import[@addon='xbmc.python']/@version\nset $(abi)\nsave\nbye\n" | xmllint --shell addon.xml; \
 		matrix=$(findstring $(abi), $(word 1,$(KODI_PYTHON_ABIS))); \
 		if [ $$matrix ]; then version=$(version)+matrix.1; else version=$(version); fi; \
-		echo "cd /addon/@version\nset $$version\nsave\nbye" | xmllint --shell addon.xml; \
+		printf "cd /addon/@version\nset $$version\nsave\nbye\n" | xmllint --shell addon.xml; \
 		make build; \
 	)
 
 clean:
-	@echo -e "$(white)=$(blue) Cleaning up$(reset)"
+	@printf "$(white)=$(blue) Cleaning up$(reset)\n"
 	find . -name '*.py[cod]' -type f -delete
 	find . -name '__pycache__' -type d -delete
 	rm -rf .pytest_cache/ .tox/
