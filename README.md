@@ -33,12 +33,12 @@ content available on [Red Bull TV](https://www.redbull.com/discover).
 
 ## Releases
 ### v3.2.2 (2021-01-12)
-- A fix in the parsing using the new standard for UTC timezone (@dagwiers)
-- Improvements to the parsing and logging of these issues in the future (@dagwiers)
-- Unit tests to detect EPG issues (test for empty results) (@dagwiers)
-- Add GitHub CI workflow for testing EPG issues (@dagwiers)
-- Add python 3.9 support (@dagwiers)
-- Add descriptions to GitHub CI workflows (@dagwiers)
+- A fix in the parsing using the new standard for UTC timezone (@dagwieers)
+- Improvements to the parsing and logging of these issues in the future (@dagwieers)
+- Unit tests to detect EPG issues (test for empty results) (@dagwieers)
+- Add GitHub CI workflow for testing EPG issues (@dagwieers)
+- Add python 3.9 support (@dagwieers)
+- Add descriptions to GitHub CI workflows (@dagwieers)
 - Allow installing IPTV Manager from the add-on settings (@michaelarnauts)
 
 ### v3.2.1 (2020-10-31)
