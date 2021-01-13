@@ -35,7 +35,6 @@ msgctxt "#30014"
 msgid "Search"
 msgstr "Zoeken"
 
-
 msgctxt "#30200"
 msgid "General"
 msgstr "Algemeen"
@@ -68,6 +67,7 @@ msgctxt "#30228"
 msgid "Beste van Red Bull TV"
 msgstr ""
 
+
 ### SETTINGS
 msgctxt "#30860"
 msgid "Integration"
@@ -88,6 +88,26 @@ msgstr "Activeer IPTV Manager integratie"
 msgctxt "#30879"
 msgid "IPTV Manager settings…"
 msgstr "IPTV Manager instellingen…"
+
+msgctxt "#30900"
+msgid "Expert"
+msgstr "Expert"
+
+msgctxt "#30931"
+msgid "Logging"
+msgstr "Logboek"
+
+msgctxt "#30933"
+msgid "Log level"
+msgstr "Log niveau"
+
+msgctxt "#30935"
+msgid "Install Kodi Logfile Uploader…"
+msgstr "Installeer Kodi Logfile Uploader…"
+
+msgctxt "#30937"
+msgid "Open Kodi Logfile Uploader…"
+msgstr "Open Kodi Logfile Uploader…"
 
 
 ### MESSAGES
