@@ -14,7 +14,7 @@ class RedBullTV():
     REDBULL_RESOURCES = 'https://resources.redbull.tv/'
 
     def __init__(self):
-        self.token = self.get_json(self.REDBULL_API + 'session?category=smart_tv&os_family=android', use_token=False)['token']
+        self.token = self.get_json(self.REDBULL_API + 'session?category=smart_tv&os_family=android', use_token=False).get('token')
 
     def get_play_url(self, uid):
         return self.REDBULL_STREAMS + uid + '/' + self.token + '/playlist.m3u8'
@@ -78,7 +78,7 @@ class RedBullTV():
                 continue
 
             if not regexp.match(item.get('end_time', '')):
-                xbmc.log("Invalid start_time '{end_time}' for Red Bull item ID '{id}'".format(**item))
+                xbmc.log("Invalid end_time '{end_time}' for Red Bull item ID '{id}'".format(**item))
                 continue
 
             epg['redbulltv'].append(dict(
